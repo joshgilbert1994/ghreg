@@ -54,7 +54,7 @@ and the number of divergent transitions. Plot it with
 ``` r
 # \donttest{
 sens <- gh_sensitivity(persist_sim, es1, se1, es2, se2, study = study,
-                       rho = seq(0, 0.9, by = 0.3))
+                       rho = seq(0, 0.9, by = 0.3), chains = 2)
 #> Compiling the Stan model (once per machine; about a minute)...
 #> Error in rstan::stan_model(model_code = code, model_name = "gh_reg"): Boost not found; call install.packages('BH')
 sens

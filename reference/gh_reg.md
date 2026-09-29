@@ -199,7 +199,10 @@ to vary `rho`,
 
 ``` r
 # \donttest{
-fit <- gh_reg(persist_sim, es1, se1, es2, se2, study = study, rho = 0.6)
+# 2 chains keeps the examples within CRAN's limit of 2 cores; the default
+# is 4 chains run in parallel
+fit <- gh_reg(persist_sim, es1, se1, es2, se2, study = study, rho = 0.6,
+              chains = 2)
 #> Compiling the Stan model (once per machine; about a minute)...
 #> Error in rstan::stan_model(model_code = code, model_name = "gh_reg"): Boost not found; call install.packages('BH')
 fit
@@ -208,7 +211,7 @@ coef(fit)
 #> Error: object 'fit' not found
 
 # study-specific sampling correlations
-gh_reg(persist_sim, es1, se1, es2, se2, study = study, rho = rho)
+gh_reg(persist_sim, es1, se1, es2, se2, study = study, rho = rho, chains = 2)
 #> Compiling the Stan model (once per machine; about a minute)...
 #> Error in rstan::stan_model(model_code = code, model_name = "gh_reg"): Boost not found; call install.packages('BH')
 # }

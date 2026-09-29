@@ -69,7 +69,8 @@ return the draws.
 
 ``` r
 # \donttest{
-fit <- gh_reg(persist_sim, es1, se1, es2, se2, study = study, rho = 0.6)
+fit <- gh_reg(persist_sim, es1, se1, es2, se2, study = study, rho = 0.6,
+              chains = 2)
 #> Compiling the Stan model (once per machine; about a minute)...
 #> Error in rstan::stan_model(model_code = code, model_name = "gh_reg"): Boost not found; call install.packages('BH')
 summary(fit)
