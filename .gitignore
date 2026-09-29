@@ -1,0 +1,12 @@
+.Rproj.user
+.Rhistory
+.RData
+.DS_Store
+docs/
+inst/doc
+*.tar.gz
+ghreg.Rcheck/
+.Rapp.history
+README.html
+vignettes/*.html
+tools/man/

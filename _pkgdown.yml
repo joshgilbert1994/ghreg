@@ -1,0 +1,16 @@
+url: https://joshgilbert1994.github.io/ghreg/
+template:
+  bootstrap: 5
+reference:
+  - title: Fitting
+    contents:
+      - gh_reg
+      - gh_sensitivity
+      - plot.gh_sensitivity
+      - gh_prior
+      - gh_backend
+      - gh_reg-methods
+  - title: Data
+    contents:
+      - gh_simulate
+      - persist_sim

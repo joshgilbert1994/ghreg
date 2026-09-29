@@ -1,0 +1,40 @@
+Package: ghreg
+Title: Persistence Meta-Regression Adjusted for Correlated Sampling Error
+Version: 0.1.0
+Authors@R: 
+    person("Joshua B.", "Gilbert", , "joshua_gilbert@gse.harvard.edu", role = c("aut", "cre"))
+Description: Fits the Bayesian persistence meta-regression of Gilbert and
+    Himmelsbach (2026) <doi:10.26300/87r9-qm15>, which regresses follow-up
+    effect sizes on endline effect sizes while accounting for sampling error
+    in both and for the correlation between the two sampling errors. Ignoring
+    that correlation usually overstates how much intervention effects
+    persist. Supports multiple effect-size pairs per study, study-specific
+    sampling correlations, and sensitivity analysis over a range of assumed
+    correlations. Models are fit in 'Stan' through 'rstan' or 'cmdstanr'.
+License: MIT + file LICENSE
+URL: https://github.com/joshgilbert1994/ghreg, https://joshgilbert1994.github.io/ghreg/
+BugReports: https://github.com/joshgilbert1994/ghreg/issues
+Depends: 
+    R (>= 4.1.0)
+Imports: 
+    graphics,
+    posterior (>= 1.5.0),
+    rlang (>= 1.0.0),
+    rstan (>= 2.26.0),
+    stats,
+    tibble,
+    tools,
+    utils
+Suggests: 
+    cmdstanr (>= 0.8.0),
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0),
+    withr
+Additional_repositories: https://stan-dev.r-universe.dev
+VignetteBuilder: knitr
+Config/testthat/edition: 3
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+Config/roxygen2/version: 8.1.0

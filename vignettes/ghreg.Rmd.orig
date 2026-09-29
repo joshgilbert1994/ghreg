@@ -1,0 +1,163 @@
+---
+title: "Persistence meta-regression with ghreg"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Persistence meta-regression with ghreg}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+<!-- This vignette is precomputed because it fits Stan models.
+     Edit ghreg.Rmd.orig, then run vignettes/precompile.R. -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.path = "figures/",
+                      fig.width = 6, fig.height = 4.2, dpi = 110, out.width = "90%")
+options(width = 90)
+knitr::knit_hooks$set(par = function(before, options, envir) {
+  if (before) par(mar = c(4.5, 4.5, 1, 1))
+})
+knitr::opts_chunk$set(par = TRUE)
+```
+
+Meta-analyses often ask how much of an intervention's effect persists by regressing effect sizes at follow-up on effect sizes at endline. The slope, the *conditional persistence*, is the expected follow-up effect per unit of endline effect: 1 means effects fully persist and 0 means they fully fade.
+
+The endline and follow-up effect sizes usually come from the same participants measured with the same outcome, so their sampling errors are correlated. If a trial's endline estimate is too high by chance, its follow-up estimate probably is too. Gilbert and Himmelsbach (2026) show that this correlation inflates the naive slope. ghreg fits their correction.
+
+```{r}
+library(ghreg)
+```
+
+## Why the naive slope is biased
+
+Write the observed effect sizes as true effects plus sampling error, $\delta_{t} = \theta_{t} + e_{t}$, with true effects related by $\theta_2 = \alpha + \beta\theta_1 + \eta$. If the sampling errors are correlated $\rho$, the least-squares slope of $\delta_2$ on $\delta_1$ converges to $\beta$ plus
+
+$$
+\underbrace{\frac{\rho\sqrt{\mathrm{Var}(e_1)\mathrm{Var}(e_2)}}{\mathrm{Var}(\theta_1) + \mathrm{Var}(e_1)}}_{\text{correlation-driven bias}}
+\; - \;
+\underbrace{\frac{\beta\,\mathrm{Var}(e_1)}{\mathrm{Var}(\theta_1) + \mathrm{Var}(e_1)}}_{\text{attenuation bias}}.
+$$
+
+With $\rho = 0$ this is the familiar attenuation from measurement error in a predictor. For a difference in means with a constant treatment effect, $\rho$ equals the correlation of the outcome across time (its test-retest reliability), which is typically well above zero. When $\rho > \beta$ and the two sampling variances are similar, the correlation term wins and the naive slope overstates persistence. A standard errors-in-variables correction, which assumes $\rho = 0$, makes things worse.
+
+## The data
+
+`persist_sim` is a simulated meta-analysis of 60 studies, each reporting 1 to 5 pairs of effect sizes. Each pair comes from a simulated randomized trial of 40 to 200 participants, analyzed by a difference in means, as in the paper's simulations. The true conditional persistence is 0.4, and each outcome's test-retest correlation `rho` varies between pairs (mean 0.67).
+
+```{r data}
+head(persist_sim)
+```
+
+The naive meta-regression, the ordinary least-squares slope used in the paper's simulations, overstates persistence:
+
+```{r naive}
+naive <- lm(es2 ~ es1, data = persist_sim)
+coef(naive)
+```
+
+```{r scatter, fig.cap = "Observed effect sizes. The dashed line is the true relation (slope 0.4); the solid line is the naive fit."}
+plot(es2 ~ es1, data = persist_sim, pch = 19, col = adjustcolor("grey30", 0.5),
+     xlab = "Endline effect size", ylab = "Follow-up effect size", las = 1)
+abline(naive, lwd = 2, col = "#D55E00")
+abline(0, 0.4, lwd = 2, lty = 2)
+legend("topleft", c("Naive fit", "True relation"), col = c("#D55E00", "black"),
+       lty = 1:2, lwd = 2, bty = "n")
+```
+
+## Fitting the model
+
+`gh_reg()` takes the endline and follow-up effect sizes and standard errors, an optional study identifier, and the sampling correlation `rho`. Here `rho` is known because the data are simulated, so we pass the column:
+
+```{r fit}
+fit <- gh_reg(persist_sim, es1, se1, es2, se2, study = study, rho = rho,
+              seed = 2027)
+fit
+```
+
+The posterior mean of `beta` is well below the naive slope, and its 95% interval covers the true value of 0.4. The other parameters are
+
+- `alpha`: mean true follow-up effect when the true endline effect is 0;
+- `mu`: mean true endline effect;
+- `sd_u1`, `sd_u2`: between-study SDs of the true endline effects and of the follow-up effects given the endline effects;
+- `tau1`, `tau2`: the same SDs within studies.
+
+Because the data have several pairs per study, `gh_reg()` fit the three-level model. With `study = NULL`, or one pair per study, it fits the two-level model in the paper.
+
+### Summaries as tibbles
+
+The summary printed with the fit is a tibble, stored in `fit$summary`. Its columns follow broom's naming style: `estimate` and `std.error` are the posterior mean and SD, `ci.lower` and `ci.upper` bound an equal-tailed credible interval, and `rhat`, `ess_bulk`, and `ess_tail` are convergence diagnostics. `summary()` recomputes it at another interval level:
+
+```{r summary}
+summary(fit, ci.level = 0.9, diagnostics = FALSE)
+```
+
+### Posterior draws
+
+The posterior draws are available in the [posterior](https://mc-stan.org/posterior/) format, which makes other summaries easy. For example, the posterior probability that persistence is below the naive estimate:
+
+```{r draws}
+draws <- as_draws_df(fit)
+mean(draws$beta < coef(naive)["es1"])
+```
+
+## Sensitivity analysis when rho is unknown
+
+In real meta-analyses the correlation of outcomes across time is rarely reported. Gilbert and Himmelsbach recommend treating it as a sensitivity parameter: refit the model over a range of values and see how the conclusions change. `gh_sensitivity()` does this, reusing the compiled model:
+
+```{r sens}
+sens <- gh_sensitivity(persist_sim, es1, se1, es2, se2, study = study,
+                       rho = seq(0, 0.9, by = 0.1), seed = 2027)
+sens
+```
+
+```{r sens-plot, fig.cap = "Posterior mean and 95% interval for conditional persistence at each assumed sampling correlation. The dashed lines mark the naive slope and the true value."}
+plot(sens, ref = c(Naive = coef(naive)[["es1"]], Truth = 0.4))
+```
+
+Assuming $\rho = 0$ corrects only for attenuation, so it gives a *larger* slope than the naive fit. As the assumed correlation rises, the estimate falls below the naive slope. For these data, the corrected slope is smaller than the naive one for any assumed correlation above about 0.5. Reporting the whole curve lets readers apply their own beliefs about how stable the outcomes are.
+
+`sens` is a tibble with the same columns as `summary(fit)`, plus `rho` and the number of divergent transitions, so it's easy to filter, tabulate, or plot with other tools such as ggplot2.
+
+## Options
+
+**Study-specific correlations.** If reliabilities are known for some outcomes, pass a column (or vector) with one value per pair, as in the first fit above.
+
+**Priors.** The defaults are the paper's: normal(0, 1) for `mu`, `alpha`, and `beta`, and half-Cauchy(0, 0.5) for all SDs. Change them with `gh_prior()`:
+
+```{r prior}
+gh_prior(beta = c(0.5, 0.5), sd_scale = 0.25)
+```
+
+**Backends.** Models are fit in Stan through rstan or cmdstanr. By default ghreg uses cmdstanr when it and CmdStan are installed, and rstan otherwise; choose with `backend = "rstan"` or `options(ghreg.backend = "rstan")`. The model compiles once per machine and is cached, so later fits take seconds. Arguments such as `chains`, `iter_sampling`, and `seed` are passed to Stan, and `...` passes others (for example `adapt_delta` with cmdstanr).
+
+**Simulation.** `gh_simulate()` generates data like `persist_sim`, which is useful for checking the method under designs that resemble your own:
+
+```{r sim}
+set.seed(1)
+d <- gh_simulate(n_studies = 200, n = 100, rho = 0.8, beta = 0.3)
+coef(lm(es2 ~ es1, d))["es1"]
+coef(gh_reg(d, es1, se1, es2, se2, rho = 0.8, seed = 1))["beta"]
+```
+
+## How the model is fit
+
+For pair $j$ in study $k$,
+
+$$
+\begin{aligned}
+\theta_{1jk} &= \mu + u_{1k} + \epsilon_{1jk}, \\
+\theta_{2jk} &= \alpha + \beta\,\theta_{1jk} + u_{2k} + \epsilon_{2jk}, \\
+\begin{pmatrix}\delta_{1jk} \\ \delta_{2jk}\end{pmatrix} &\sim
+N\!\left(\begin{pmatrix}\theta_{1jk} \\ \theta_{2jk}\end{pmatrix},
+\begin{pmatrix}\sigma_{1jk}^2 & \rho_{jk}\sigma_{1jk}\sigma_{2jk} \\
+\rho_{jk}\sigma_{1jk}\sigma_{2jk} & \sigma_{2jk}^2\end{pmatrix}\right),
+\end{aligned}
+$$
+
+with $u_{1k} \sim N(0, sd_{u1}^2)$, $u_{2k} \sim N(0, sd_{u2}^2)$, $\epsilon_{1jk} \sim N(0, \tau_1^2)$, and $\epsilon_{2jk} \sim N(0, \tau_2^2)$. The same $\beta$ links true effects within and between studies.
+
+Rather than sampling every latent effect, the Stan program integrates $\theta$, $\epsilon$, and $u$ out analytically. Each pair contributes a $2 \times 2$ block and each study a rank-2 correction, handled with the Woodbury identity. The posterior is the same as that of the latent-variable program in the paper's appendix, but Stan samples only the seven hyperparameters. That makes fits fast and avoids the funnel geometry that causes divergent transitions when sampling error is large relative to $\tau_1$.
+
+## Reference
+
+Gilbert, J. B., & Himmelsbach, Z. (2026). *Why fadeout is (probably) worse than we think: Adjusting for correlated sampling error in meta-analyses of behavioral interventions* (EdWorkingPaper No. 26-1394). Annenberg Institute at Brown University. <https://doi.org/10.26300/87r9-qm15>
