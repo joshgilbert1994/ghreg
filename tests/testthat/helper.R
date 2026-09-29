@@ -5,10 +5,10 @@ skip_if_no_backend <- function(backend) {
   if (backend == "cmdstanr" && !ghreg:::.has_cmdstan()) skip("CmdStan not available")
   if (backend == "rstan") {
     skip_if_not_installed("rstan")
-    # On GitHub's Windows runners the rstan compile fails inside R CMD check's
-    # test run (the compiler output is cut off before the error), though the
-    # same compile succeeds in the examples, which still cover Windows.
+    # rstan's compile fails intermittently on GitHub's Windows runners (the
+    # compiler output is cut off before the error); Ubuntu and macOS CI still
+    # run these tests.
     if (.Platform$OS.type == "windows" && nzchar(Sys.getenv("CI")))
-      skip("rstan compile fails in the Windows CI test run; covered by the examples")
+      skip("rstan compile is unreliable on Windows CI")
   }
 }

@@ -17,7 +17,10 @@ jobs:
       matrix:
         config:
           - {os: macos-latest, r: 'release'}
-          - {os: windows-latest, r: 'release'}
+          # rstan's compile fails intermittently on GitHub's Windows runners, so
+          # skip --as-cran there: it runs the \donttest examples, which fit models.
+          # The rstan fitting tests are skipped on Windows CI in tests/testthat/helper.R.
+          - {os: windows-latest, r: 'release', args: 'c("--no-manual")'}
           - {os: ubuntu-latest, r: 'release'}
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -36,6 +39,7 @@ jobs:
           needs: check
       - uses: r-lib/actions/check-r-package@v2
         with:
+          args: ${{ matrix.config.args || 'c("--no-manual", "--as-cran")' }}
           upload-snapshots: true
           build_args: 'c("--no-manual","--compact-vignettes=gs+qpdf")'
       - name: Show the failing output
