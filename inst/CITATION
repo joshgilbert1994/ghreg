@@ -7,7 +7,6 @@ bibentry(
   type = "EdWorkingPaper",
   number = "26-1394",
   doi = "10.26300/87r9-qm15",
-  url = "https://doi.org/10.26300/87r9-qm15",
   textVersion = paste(
     "Gilbert, J. B., & Himmelsbach, Z. (2026).",
     "Why fadeout is (probably) worse than we think: Adjusting for correlated",

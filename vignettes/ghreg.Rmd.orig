@@ -139,6 +139,15 @@ coef(lm(es2 ~ es1, d))["es1"]
 coef(gh_reg(d, es1, se1, es2, se2, rho = 0.8, seed = 1))["beta"]
 ```
 
+By default the simulated studies have no study-level variation (`sd_u1 = sd_u2 = 0`), so pairs from the same study are independent and the data follow the two-level model. To simulate three-level data, give studies several pairs and set the study-level SDs above zero:
+
+```{r sim3}
+set.seed(2)
+d3 <- gh_simulate(n_studies = 80, pairs_per_study = 3, n = 150, rho = 0.7, beta = 0.5, tau1 = 0.15, tau2 = 0.05, sd_u1 = 0.2, sd_u2 = 0.1)
+fit3 <- gh_reg(d3, es1, se1, es2, se2, study = study, rho = 0.7, seed = 1)
+summary(fit3, diagnostics = FALSE)
+```
+
 ## How the model is fit
 
 For pair $j$ in study $k$,
@@ -155,6 +164,8 @@ N\!\left(\begin{pmatrix}\theta_{1jk} \\ \theta_{2jk}\end{pmatrix},
 $$
 
 with $u_{1k} \sim N(0, sd_{u1}^2)$, $u_{2k} \sim N(0, sd_{u2}^2)$, $\epsilon_{1jk} \sim N(0, \tau_1^2)$, and $\epsilon_{2jk} \sim N(0, \tau_2^2)$. The same $\beta$ links true effects within and between studies.
+
+The study effects $u_{1k}$ and $u_{2k}$ capture clustering of the *true* effects within studies. The sampling errors of different pairs are assumed independent, even within a study. When a study reports several effect sizes from the same participants, their sampling errors are likely correlated as well, which the model does not account for.
 
 Rather than sampling every latent effect, the Stan program integrates $\theta$, $\epsilon$, and $u$ out analytically. Each pair contributes a $2 \times 2$ block and each study a rank-2 correction, handled with the Woodbury identity. The posterior is the same as that of the latent-variable program in the paper's appendix, but Stan samples only the seven hyperparameters. That makes fits fast and avoids the funnel geometry that causes divergent transitions when sampling error is large relative to $\tau_1$.
 

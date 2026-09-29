@@ -9,19 +9,27 @@
 #' @section Model:
 #' For effect-size pair \eqn{j} in study \eqn{k}, with observed endline and
 #' follow-up effect sizes \eqn{\delta_{1jk}} and \eqn{\delta_{2jk}},
-#' \deqn{\theta_{1jk} = \mu + u_{1k} + \epsilon_{1jk}}
-#' \deqn{\theta_{2jk} = \alpha + \beta\theta_{1jk} + u_{2k} + \epsilon_{2jk}}
+#' \deqn{\theta_{1jk} = \mu + u_{1k} + \epsilon_{1jk}}{theta1_jk = mu + u1_k + eps1_jk}
+#' \deqn{\theta_{2jk} = \alpha + \beta \theta_{1jk} + u_{2k} + \epsilon_{2jk}}{theta2_jk = alpha + beta * theta1_jk + u2_k + eps2_jk}
 #' \deqn{(\delta_{1jk}, \delta_{2jk}) \sim N\left((\theta_{1jk}, \theta_{2jk}),
-#'   \Sigma_{jk}\right),}
+#'   \Sigma_{jk}\right),}{(es1_jk, es2_jk) ~ N((theta1_jk, theta2_jk), Sigma_jk),}
 #' where \eqn{\Sigma_{jk}} has variances `se1^2` and `se2^2` and correlation
-#' `rho`, \eqn{u_{1k} \sim N(0, sd_{u1}^2)}, \eqn{u_{2k} \sim N(0, sd_{u2}^2)},
-#' \eqn{\epsilon_{1jk} \sim N(0, \tau_1^2)} and \eqn{\epsilon_{2jk} \sim N(0,
-#' \tau_2^2)}. The same `beta` links the true effects within and between
-#' studies.
+#' `rho`, and
+#' \eqn{u_{1k} \sim N(0, sd_{u1}^2)}{u1_k ~ N(0, sd_u1^2)},
+#' \eqn{u_{2k} \sim N(0, sd_{u2}^2)}{u2_k ~ N(0, sd_u2^2)},
+#' \eqn{\epsilon_{1jk} \sim N(0, \tau_1^2)}{eps1_jk ~ N(0, tau1^2)}, and
+#' \eqn{\epsilon_{2jk} \sim N(0, \tau_2^2)}{eps2_jk ~ N(0, tau2^2)}.
+#' The same `beta` links the true effects within and between studies.
 #'
 #' With `study = NULL`, or when every study contributes one pair, the study
 #' level is dropped (only \eqn{sd_{u}^2 + \tau^2} would be identified) and the
 #' model is the two-level model in the paper.
+#'
+#' The study effects \eqn{u_{1k}} and \eqn{u_{2k}} capture clustering of the
+#' *true* effects within studies. The sampling errors of different pairs are
+#' assumed independent, even within a study. When a study reports several
+#' effect sizes from the same participants, their sampling errors are likely
+#' correlated as well, which the model does not account for.
 #'
 #' The latent \eqn{\theta}, \eqn{\epsilon}, and \eqn{u} are integrated out
 #' analytically, so Stan samples only the hyperparameters. The posterior is the

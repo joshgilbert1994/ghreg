@@ -29,8 +29,22 @@ per study.}
 \item{rho}{Correlation of the outcome across time (the test-retest
 reliability): one number, or one per pair.}
 
-\item{mu, alpha, beta, tau1, tau2, sd_u1, sd_u2}{Parameters of the persistence
-model; see \code{\link[=gh_reg]{gh_reg()}}. With \code{sd_u1 = sd_u2 = 0} studies are exchangeable.}
+\item{mu}{Mean true endline effect.}
+
+\item{alpha}{Mean true follow-up effect when the true endline effect is 0.}
+
+\item{beta}{Conditional persistence: the slope of the true follow-up effect
+on the true endline effect.}
+
+\item{tau1}{SD of the true endline effects across pairs within a study.}
+
+\item{tau2}{Residual SD of the true follow-up effects across pairs within a
+study, given the true endline effects.}
+
+\item{sd_u1}{SD of the study effects on the true endline effects.}
+
+\item{sd_u2}{SD of the study effects on the true follow-up effects, given
+the true endline effects.}
 }
 \value{
 A data frame with one row per pair: \code{study}, \code{es_id}, \code{n}, \code{rho},
@@ -48,6 +62,25 @@ correlated by (approximately) \code{rho}.
 \details{
 Outcomes have unit variance within arm, so the effect sizes are on a
 standardized scale. Participants are split evenly between arms.
+
+The true effects follow the model in \code{\link[=gh_reg]{gh_reg()}}:
+\deqn{\theta_{1jk} = \mu + u_{1k} + \epsilon_{1jk}}{theta1_jk = mu + u1_k + eps1_jk}
+\deqn{\theta_{2jk} = \alpha + \beta \theta_{1jk} + u_{2k} + \epsilon_{2jk}}{theta2_jk = alpha + beta * theta1_jk + u2_k + eps2_jk}
+with study effects \eqn{u_{1k} \sim N(0, sd_{u1}^2)}{u1_k ~ N(0, sd_u1^2)} and
+\eqn{u_{2k} \sim N(0, sd_{u2}^2)}{u2_k ~ N(0, sd_u2^2)} shared by every pair in study \eqn{k}, and
+pair-level deviations \eqn{\epsilon_{1jk} \sim N(0, \tau_1^2)}{eps1_jk ~ N(0, tau1^2)} and
+\eqn{\epsilon_{2jk} \sim N(0, \tau_2^2)}{eps2_jk ~ N(0, tau2^2)}.
+
+With \code{sd_u1 = sd_u2 = 0} (the default) there is no study-level variation:
+pairs from the same study are independent, so the data follow the two-level
+model and the study grouping has no effect. Set \code{sd_u1} or \code{sd_u2} above 0,
+with \code{pairs_per_study} above 1, to simulate data for the three-level model.
+
+Each pair is simulated as its own trial, so sampling errors are independent
+across pairs, including pairs from the same study. In real meta-analyses,
+several effect sizes from one study often share participants, so their
+sampling errors are correlated; neither \code{gh_simulate()} nor \code{\link[=gh_reg]{gh_reg()}}
+models that.
 }
 \examples{
 set.seed(1)
@@ -55,4 +88,9 @@ d <- gh_simulate(n_studies = 100, n = 100, rho = 0.7)
 head(d)
 # the naive meta-regression slope is inflated (true beta = 0.5)
 coef(lm(es2 ~ es1, d))
+
+# three-level data: 40 studies with 3 pairs each and study-level variation
+d3 <- gh_simulate(n_studies = 40, pairs_per_study = 3, rho = 0.7,
+                  tau1 = 0.15, sd_u1 = 0.2, sd_u2 = 0.05)
+table(table(d3$study))
 }
