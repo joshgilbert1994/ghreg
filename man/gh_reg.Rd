@@ -130,12 +130,15 @@ study-specific values.
 
 \examples{
 \donttest{
-fit <- gh_reg(persist_sim, es1, se1, es2, se2, study = study, rho = 0.6)
+# 2 chains keeps the examples within CRAN's limit of 2 cores; the default
+# is 4 chains run in parallel
+fit <- gh_reg(persist_sim, es1, se1, es2, se2, study = study, rho = 0.6,
+              chains = 2)
 fit
 coef(fit)
 
 # study-specific sampling correlations
-gh_reg(persist_sim, es1, se1, es2, se2, study = study, rho = rho)
+gh_reg(persist_sim, es1, se1, es2, se2, study = study, rho = rho, chains = 2)
 }
 }
 \references{

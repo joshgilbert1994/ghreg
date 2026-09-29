@@ -15,7 +15,8 @@
 #'   `as_draws()`, `as_draws_array()`, and `as_draws_df()` return the draws.
 #' @examples
 #' \donttest{
-#' fit <- gh_reg(persist_sim, es1, se1, es2, se2, study = study, rho = 0.6)
+#' fit <- gh_reg(persist_sim, es1, se1, es2, se2, study = study, rho = 0.6,
+#'               chains = 2)
 #' summary(fit)
 #' summary(fit, ci.level = 0.9, diagnostics = FALSE)
 #' coef(fit)

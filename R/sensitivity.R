@@ -19,7 +19,7 @@
 #' @examples
 #' \donttest{
 #' sens <- gh_sensitivity(persist_sim, es1, se1, es2, se2, study = study,
-#'                        rho = seq(0, 0.9, by = 0.3))
+#'                        rho = seq(0, 0.9, by = 0.3), chains = 2)
 #' sens
 #' plot(sens)
 #' }
