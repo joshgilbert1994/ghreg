@@ -42,8 +42,11 @@ jobs:
         if: failure()
         shell: bash
         run: |
-          # post the end of the failing example/test output as a (public) annotation
+          # post failing example/test output as (public) annotations: the first
+          # failure in full, then the end of the file
+          enc() { sed -e 's/%/%25/g' -e 's/\r/%0D/g' | awk '{printf "%s%%0A", $0}'; }
           for f in $(find check -name '*.Rout.fail' 2>/dev/null); do
-            msg=$(tail -n 40 "$f" | sed -e 's/%/%25/g' -e 's/\r/%0D/g' | awk '{printf "%s%%0A", $0}')
-            echo "::error title=$(basename "$f")::$msg"
+            first=$(awk '/^(══ Failed|── (Error|Failure))/{p=1} p' "$f" | head -n 70 | enc)
+            [ -n "$first" ] && echo "::error title=$(basename "$f") (first failure)::$first"
+            echo "::error title=$(basename "$f") (end)::$(tail -n 40 "$f" | enc)"
           done
