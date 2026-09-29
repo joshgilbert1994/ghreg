@@ -17,7 +17,10 @@ gh_sensitivity(
 \item{rho}{Values of the sampling correlation to try. Each value is applied
 to every pair of effect sizes.}
 
-\item{parameters}{Parameters to report.}
+\item{parameters}{Parameters to report: any of \code{"beta"}, \code{"alpha"}, \code{"mu"},
+\code{"tau1"}, \code{"tau2"}, and, for the three-level model, \code{"sd_u1"} and
+\code{"sd_u2"}. Every fit estimates all parameters; this only chooses which
+rows are kept. Unknown names are an error.}
 
 \item{ci.level}{Probability mass of the credible intervals.}
 }

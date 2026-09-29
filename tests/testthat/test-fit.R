@@ -55,6 +55,14 @@ test_that("gh_sensitivity() refits over rho", {
   expect_silent(plot(s, ref = c(Naive = 0.5)))
   grDevices::dev.off()
   expect_error(gh_sensitivity(persist_sim, es1, se1, es2, se2, rho = "a"), "numeric")
+  # typos are caught before any fitting
+  expect_error(gh_sensitivity(persist_sim, es1, se1, es2, se2, rho = 0.5,
+                              parameters = c("beta", "Beta", "tau")),
+               'Unknown `parameters`: "Beta", "tau"')
+  expect_error(gh_sensitivity(persist_sim, es1, se1, es2, se2, rho = 0.5,
+                              parameters = 1), "character vector")
+  expect_error(plot(s, parameter = "alpha"), 'Not in this sensitivity analysis: "alpha"')
+  expect_error(plot(s, parameter = c("beta", "tau1")), "single parameter")
 })
 
 test_that("fits after the same seed don't share output files", {
@@ -73,4 +81,13 @@ test_that("fits after the same seed don't share output files", {
 test_that("ghreg doesn't mask broom generics", {
   ns <- getNamespaceExports("ghreg")
   expect_false(any(c("tidy", "glance", "augment") %in% ns))
+})
+
+test_that("gh_sensitivity() rejects study-level SDs in a two-level model", {
+  skip_if_no_backend(gh_backend())
+  expect_error(
+    suppressWarnings(gh_sensitivity(persist_sim, es1, se1, es2, se2,
+                                    rho = c(0.3, 0.6), parameters = c("beta", "sd_u1"),
+                                    chains = 1, iter_warmup = 200, iter_sampling = 200)),
+    'Not in this 2-level model: "sd_u1"')
 })
