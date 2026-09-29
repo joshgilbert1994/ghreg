@@ -230,17 +230,45 @@ Annenberg Institute at Brown University. <a href="https://doi.org/10.26300/87r9-
 <span class="r-in"><span><span class="co"># is 4 chains run in parallel</span></span></span>
 <span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu">gh_reg</span><span class="op">(</span><span class="va">persist_sim</span>, <span class="va">es1</span>, <span class="va">se1</span>, <span class="va">es2</span>, <span class="va">se2</span>, study <span class="op">=</span> <span class="va">study</span>, rho <span class="op">=</span> <span class="fl">0.6</span>,</span></span>
 <span class="r-in"><span>              chains <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Compiling the Stan model (once per machine; about a minute)...</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in rstan::stan_model(model_code = code, model_name = "gh_reg"):</span> Boost not found; call install.packages('BH')</span>
 <span class="r-in"><span><span class="va">fit</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'fit' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Gilbert-Himmelsbach persistence meta-regression</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3-level model: 174 pairs of effect sizes in 60 studies</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Sampling correlation (rho): 0.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Backend: rstan, 2 chains x 1000 draws; 0 divergent transitions</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 7 × 8</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   term  estimate std.error ci.lower ci.upper  rhat ess_bulk ess_tail</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> beta    0.456     0.096<span style="text-decoration: underline;">2</span>  0.261     0.639   1.00     746.     819.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> alpha  -<span style="color: #BB0000;">0.039</span><span style="color: #BB0000; text-decoration: underline;">4</span>    0.045<span style="text-decoration: underline;">7</span> -<span style="color: #BB0000;">0.124</span>     0.052<span style="text-decoration: underline;">7</span>  1.00     741.     757.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> mu      0.444     0.025<span style="text-decoration: underline;">9</span>  0.391     0.493   1.01    <span style="text-decoration: underline;">1</span>665.    <span style="text-decoration: underline;">1</span>157.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> sd_u1   0.129     0.029<span style="text-decoration: underline;">7</span>  0.067<span style="text-decoration: underline;">7</span>    0.188   1.01     624.     336.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> sd_u2   0.059<span style="text-decoration: underline;">4</span>    0.020<span style="text-decoration: underline;">4</span>  0.015<span style="text-decoration: underline;">9</span>    0.097<span style="text-decoration: underline;">4</span>  1.00     734.     305.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> tau1    0.160     0.026<span style="text-decoration: underline;">4</span>  0.108     0.212   1.01     769.     939.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">7</span> tau2    0.037<span style="text-decoration: underline;">1</span>    0.023<span style="text-decoration: underline;">3</span>  0.001<span style="text-decoration: underline;">05</span>   0.084<span style="text-decoration: underline;">7</span>  1.00     683.     390.</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'fit' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        beta       alpha          mu       sd_u1       sd_u2        tau1 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  0.45604811 -0.03940466  0.44384508  0.12927320  0.05942022  0.16006571 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        tau2 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  0.03714276 </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># study-specific sampling correlations</span></span></span>
 <span class="r-in"><span><span class="fu">gh_reg</span><span class="op">(</span><span class="va">persist_sim</span>, <span class="va">es1</span>, <span class="va">se1</span>, <span class="va">es2</span>, <span class="va">se2</span>, study <span class="op">=</span> <span class="va">study</span>, rho <span class="op">=</span> <span class="va">rho</span>, chains <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Compiling the Stan model (once per machine; about a minute)...</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in rstan::stan_model(model_code = code, model_name = "gh_reg"):</span> Boost not found; call install.packages('BH')</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Gilbert-Himmelsbach persistence meta-regression</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3-level model: 174 pairs of effect sizes in 60 studies</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Sampling correlation (rho): varies, 0.23 to 0.94 (mean 0.67)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Backend: rstan, 2 chains x 1000 draws; 0 divergent transitions</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 7 × 8</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   term  estimate std.error ci.lower ci.upper  rhat ess_bulk ess_tail</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> beta    0.330     0.088<span style="text-decoration: underline;">2</span>   0.147    0.497   1.00     774.     872.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> alpha   0.015<span style="text-decoration: underline;">0</span>    0.041<span style="text-decoration: underline;">8</span>  -<span style="color: #BB0000;">0.065</span><span style="color: #BB0000; text-decoration: underline;">0</span>   0.099<span style="text-decoration: underline;">9</span>  1.00     778.     795.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> mu      0.443     0.027<span style="text-decoration: underline;">0</span>   0.389    0.497   1.00    <span style="text-decoration: underline;">1</span>576.    <span style="text-decoration: underline;">1</span>392.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> sd_u1   0.139     0.027<span style="text-decoration: underline;">4</span>   0.085<span style="text-decoration: underline;">0</span>   0.193   1.00    <span style="text-decoration: underline;">1</span>364.     928.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> sd_u2   0.061<span style="text-decoration: underline;">5</span>    0.021<span style="text-decoration: underline;">2</span>   0.013<span style="text-decoration: underline;">0</span>   0.099<span style="text-decoration: underline;">2</span>  1.00     956.     437.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> tau1    0.161     0.024<span style="text-decoration: underline;">3</span>   0.115    0.210   1.00    <span style="text-decoration: underline;">1</span>097.    <span style="text-decoration: underline;">1</span>291.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">7</span> tau2    0.059<span style="text-decoration: underline;">9</span>    0.023<span style="text-decoration: underline;">9</span>   0.010<span style="text-decoration: underline;">8</span>   0.103   1.00     975.     540.</span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

@@ -203,16 +203,44 @@ to vary `rho`,
 # is 4 chains run in parallel
 fit <- gh_reg(persist_sim, es1, se1, es2, se2, study = study, rho = 0.6,
               chains = 2)
-#> Compiling the Stan model (once per machine; about a minute)...
-#> Error in rstan::stan_model(model_code = code, model_name = "gh_reg"): Boost not found; call install.packages('BH')
 fit
-#> Error: object 'fit' not found
+#> Gilbert-Himmelsbach persistence meta-regression
+#> 3-level model: 174 pairs of effect sizes in 60 studies
+#> Sampling correlation (rho): 0.6
+#> Backend: rstan, 2 chains x 1000 draws; 0 divergent transitions
+#> 
+#> # A tibble: 7 × 8
+#>   term  estimate std.error ci.lower ci.upper  rhat ess_bulk ess_tail
+#>   <chr>    <dbl>     <dbl>    <dbl>    <dbl> <dbl>    <dbl>    <dbl>
+#> 1 beta    0.456     0.0962  0.261     0.639   1.00     746.     819.
+#> 2 alpha  -0.0394    0.0457 -0.124     0.0527  1.00     741.     757.
+#> 3 mu      0.444     0.0259  0.391     0.493   1.01    1665.    1157.
+#> 4 sd_u1   0.129     0.0297  0.0677    0.188   1.01     624.     336.
+#> 5 sd_u2   0.0594    0.0204  0.0159    0.0974  1.00     734.     305.
+#> 6 tau1    0.160     0.0264  0.108     0.212   1.01     769.     939.
+#> 7 tau2    0.0371    0.0233  0.00105   0.0847  1.00     683.     390.
 coef(fit)
-#> Error: object 'fit' not found
+#>        beta       alpha          mu       sd_u1       sd_u2        tau1 
+#>  0.45604811 -0.03940466  0.44384508  0.12927320  0.05942022  0.16006571 
+#>        tau2 
+#>  0.03714276 
 
 # study-specific sampling correlations
 gh_reg(persist_sim, es1, se1, es2, se2, study = study, rho = rho, chains = 2)
-#> Compiling the Stan model (once per machine; about a minute)...
-#> Error in rstan::stan_model(model_code = code, model_name = "gh_reg"): Boost not found; call install.packages('BH')
+#> Gilbert-Himmelsbach persistence meta-regression
+#> 3-level model: 174 pairs of effect sizes in 60 studies
+#> Sampling correlation (rho): varies, 0.23 to 0.94 (mean 0.67)
+#> Backend: rstan, 2 chains x 1000 draws; 0 divergent transitions
+#> 
+#> # A tibble: 7 × 8
+#>   term  estimate std.error ci.lower ci.upper  rhat ess_bulk ess_tail
+#>   <chr>    <dbl>     <dbl>    <dbl>    <dbl> <dbl>    <dbl>    <dbl>
+#> 1 beta    0.330     0.0882   0.147    0.497   1.00     774.     872.
+#> 2 alpha   0.0150    0.0418  -0.0650   0.0999  1.00     778.     795.
+#> 3 mu      0.443     0.0270   0.389    0.497   1.00    1576.    1392.
+#> 4 sd_u1   0.139     0.0274   0.0850   0.193   1.00    1364.     928.
+#> 5 sd_u2   0.0615    0.0212   0.0130   0.0992  1.00     956.     437.
+#> 6 tau1    0.161     0.0243   0.115    0.210   1.00    1097.    1291.
+#> 7 tau2    0.0599    0.0239   0.0108   0.103   1.00     975.     540.
 # }
 ```

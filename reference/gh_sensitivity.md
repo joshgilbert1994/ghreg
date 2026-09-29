@@ -55,11 +55,16 @@ and the number of divergent transitions. Plot it with
 # \donttest{
 sens <- gh_sensitivity(persist_sim, es1, se1, es2, se2, study = study,
                        rho = seq(0, 0.9, by = 0.3), chains = 2)
-#> Compiling the Stan model (once per machine; about a minute)...
-#> Error in rstan::stan_model(model_code = code, model_name = "gh_reg"): Boost not found; call install.packages('BH')
 sens
-#> Error: object 'sens' not found
+#> # A tibble: 4 × 10
+#>     rho term  estimate std.error ci.lower ci.upper  rhat ess_bulk ess_tail
+#>   <dbl> <chr>    <dbl>     <dbl>    <dbl>    <dbl> <dbl>    <dbl>    <dbl>
+#> 1   0   beta     0.675    0.0811  0.529      0.845  1.00    1240.    1180.
+#> 2   0.3 beta     0.612    0.0848  0.446      0.787  1.00     660.     614.
+#> 3   0.6 beta     0.452    0.0896  0.273      0.619  1.00     672.     905.
+#> 4   0.9 beta     0.208    0.0977  0.00593    0.386  1.00     672.     958.
+#> # ℹ 1 more variable: divergences <int>
 plot(sens)
-#> Error: object 'sens' not found
+
 # }
 ```
