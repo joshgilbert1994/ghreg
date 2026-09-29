@@ -2,6 +2,7 @@
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/joshgilbert1994/ghreg/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/joshgilbert1994/ghreg/actions/workflows/R-CMD-check.yaml)
+[![pkgdown](https://github.com/joshgilbert1994/ghreg/actions/workflows/pkgdown.yaml/badge.svg)](https://joshgilbert1994.github.io/ghreg/)
 <!-- badges: end -->
 
 Meta-analyses often measure how well intervention effects persist by regressing follow-up effect sizes on endline effect sizes. Both effect sizes come from the same participants and outcomes, so their sampling errors are correlated, and the naive slope usually **overstates** persistence.
@@ -76,7 +77,7 @@ plot(sens, ref = c(Naive = 0.535, Truth = 0.4))
 
 <img src="vignettes/figures/sens-plot-1.png" width="70%" alt="Conditional persistence falls as the assumed sampling correlation rises" />
 
-See `vignette("ghreg")` for the details.
+See the [Get started guide](https://joshgilbert1994.github.io/ghreg/articles/ghreg.html) (also available as `vignette("ghreg")`) for the details, and the [package website](https://joshgilbert1994.github.io/ghreg/) for all the help pages.
 
 ## Functions
 
