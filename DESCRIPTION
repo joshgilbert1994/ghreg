@@ -17,8 +17,10 @@ BugReports: https://github.com/joshgilbert1994/ghreg/issues
 Depends: 
     R (>= 4.1.0)
 Imports: 
+    BH,
     graphics,
     posterior (>= 1.5.0),
+    RcppEigen,
     rlang (>= 1.0.0),
     rstan (>= 2.26.0),
     stats,

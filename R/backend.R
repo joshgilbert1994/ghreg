@@ -22,7 +22,7 @@ gh_backend <- function() {
 }
 
 .has_cmdstan <- function() {
-  requireNamespace("cmdstanr", quietly = TRUE) &&
+  suppressWarnings(requireNamespace("cmdstanr", quietly = TRUE)) &&
     !is.null(suppressWarnings(suppressMessages(tryCatch(
       cmdstanr::cmdstan_version(error_on_NA = FALSE), error = function(e) NULL))))
 }
@@ -67,6 +67,17 @@ gh_backend <- function() {
 .compile_rstan <- function() {
   if (!requireNamespace("rstan", quietly = TRUE))
     stop("The rstan backend needs rstan: install.packages(\"rstan\").", call. = FALSE)
+  # rstan compiles models against these headers but lists them only in
+  # LinkingTo, which installers such as pak skip for binary packages. ghreg
+  # imports them so they get installed; StanHeaders and RcppParallel come with
+  # rstan itself.
+  have <- c(BH = requireNamespace("BH", quietly = TRUE),
+            RcppEigen = requireNamespace("RcppEigen", quietly = TRUE))
+  miss <- names(have)[!have]
+  if (length(miss))
+    stop("rstan needs these packages to compile models: ",
+         paste(miss, collapse = ", "), ".\nInstall them with install.packages(c(",
+         paste0("\"", miss, "\"", collapse = ", "), ")).", call. = FALSE)
   code <- paste(readLines(.stan_file()), collapse = "\n")
   id <- paste(utils::packageVersion("rstan"), R.version$major, R.version$minor,
               .hash(code), sep = "_")
