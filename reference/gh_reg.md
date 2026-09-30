@@ -128,10 +128,37 @@ An object of class `gh_reg` with elements
 
   sampler diagnostics
 
-The parameters are `beta` (conditional persistence), `alpha` (mean true
-follow-up effect when the true endline effect is 0), `mu` (mean true
-endline effect), `sd_u1` and `sd_u2` (study-level SDs; three-level model
-only), and `tau1` and `tau2` (effect-size-level SDs).
+The parameters are
+
+- `beta`:
+
+  conditional persistence
+
+- `alpha`:
+
+  mean true follow-up effect when the true endline effect is 0
+
+- `mu`:
+
+  mean true endline effect
+
+- `study_sd1`:
+
+  between-study SD of the true endline effects (three-level model only)
+
+- `study_sd2`:
+
+  between-study residual SD of the true follow-up effects, given the
+  true endline effects (three-level model only)
+
+- `es_sd1`:
+
+  SD of the true endline effects across effect-size pairs within a study
+
+- `es_sd2`:
+
+  residual SD of the true follow-up effects across effect-size pairs
+  within a study, given the true endline effects
 
 ## Details
 
@@ -148,14 +175,24 @@ follow-up effect sizes \\\delta\_{1jk}\\ and \\\delta\_{2jk}\\,
 \epsilon\_{2jk}\$\$ \$\$(\delta\_{1jk}, \delta\_{2jk}) \sim
 N\left((\theta\_{1jk}, \theta\_{2jk}), \Sigma\_{jk}\right),\$\$ where
 \\\Sigma\_{jk}\\ has variances `se1^2` and `se2^2` and correlation
-`rho`, and \\u\_{1k} \sim N(0, sd\_{u1}^2)\\, \\u\_{2k} \sim N(0,
-sd\_{u2}^2)\\, \\\epsilon\_{1jk} \sim N(0, \tau_1^2)\\, and
-\\\epsilon\_{2jk} \sim N(0, \tau_2^2)\\. The same `beta` links the true
-effects within and between studies.
+`rho`, and \\u\_{1k} \sim N(0, \sigma\_{S1}^2)\\, \\u\_{2k} \sim N(0,
+\sigma\_{S2}^2)\\, \\\epsilon\_{1jk} \sim N(0, \sigma\_{E1}^2)\\, and
+\\\epsilon\_{2jk} \sim N(0, \sigma\_{E2}^2)\\. The same `beta` links the
+true effects within and between studies.
+
+The four standard deviations \\\sigma\_{S1}\\, \\\sigma\_{S2}\\,
+\\\sigma\_{E1}\\, and \\\sigma\_{E2}\\ are reported as `study_sd1`,
+`study_sd2`, `es_sd1`, and `es_sd2`: S (study) is the between-study
+level and E (effect size) the level of effect-size pairs within studies.
+The "1" SDs describe the true endline effects. The "2" SDs are
+*residual*: they describe the true follow-up effects after conditioning
+on the true endline effects, so the total SD of the true follow-up
+effects is at least as large (larger whenever `beta` is not 0).
 
 With `study = NULL`, or when every study contributes one pair, the study
-level is dropped (only \\sd\_{u}^2 + \tau^2\\ would be identified) and
-the model is the two-level model in the paper.
+level is dropped, since only the sum of the study- and pair-level
+variances would be identified, and the model is the two-level model in
+the paper. Its \\\tau_1\\ and \\\tau_2\\ are `es_sd1` and `es_sd2`.
 
 The study effects \\u\_{1k}\\ and \\u\_{2k}\\ capture clustering of the
 *true* effects within studies. The sampling errors of different pairs
@@ -167,8 +204,7 @@ The latent \\\theta\\, \\\epsilon\\, and \\u\\ are integrated out
 analytically, so Stan samples only the hyperparameters. The posterior is
 the same as that of the latent-variable program in the paper's appendix,
 but sampling is faster and free of the funnel geometry that causes
-divergent transitions when sampling error is large relative to
-\\\tau_1\\.
+divergent transitions when sampling error is large relative to `es_sd1`.
 
 ## The sampling correlation `rho`
 
@@ -199,48 +235,49 @@ to vary `rho`,
 
 ``` r
 # \donttest{
-# 2 chains keeps the examples within CRAN's limit of 2 cores; the default
-# is 4 chains run in parallel
+# 2 chains of 2000 draws give the default 4000 draws within CRAN's limit
+# of 2 cores; the default is 4 chains of 1000 run in parallel
 fit <- gh_reg(persist_sim, es1, se1, es2, se2, study = study, rho = 0.6,
-              chains = 2)
+              chains = 2, iter_sampling = 2000)
 fit
 #> Gilbert-Himmelsbach persistence meta-regression
 #> 3-level model: 174 pairs of effect sizes in 60 studies
 #> Sampling correlation (rho): 0.6
-#> Backend: rstan, 2 chains x 1000 draws; 0 divergent transitions
+#> Backend: rstan, 2 chains x 2000 draws; 0 divergent transitions
 #> 
 #> # A tibble: 7 × 8
-#>   term  estimate std.error ci.lower ci.upper  rhat ess_bulk ess_tail
-#>   <chr>    <dbl>     <dbl>    <dbl>    <dbl> <dbl>    <dbl>    <dbl>
-#> 1 beta    0.456     0.0962  0.261     0.639   1.00     746.     819.
-#> 2 alpha  -0.0394    0.0457 -0.124     0.0527  1.00     741.     757.
-#> 3 mu      0.444     0.0259  0.391     0.493   1.01    1665.    1157.
-#> 4 sd_u1   0.129     0.0297  0.0677    0.188   1.01     624.     336.
-#> 5 sd_u2   0.0594    0.0204  0.0159    0.0974  1.00     734.     305.
-#> 6 tau1    0.160     0.0264  0.108     0.212   1.01     769.     939.
-#> 7 tau2    0.0371    0.0233  0.00105   0.0847  1.00     683.     390.
+#>   term      estimate std.error ci.lower ci.upper  rhat ess_bulk ess_tail
+#>   <chr>        <dbl>     <dbl>    <dbl>    <dbl> <dbl>    <dbl>    <dbl>
+#> 1 beta        0.456     0.0942  0.268     0.638   1.00    1578.    1940.
+#> 2 alpha      -0.0394    0.0448 -0.125     0.0500  1.00    1638.    1912.
+#> 3 mu          0.444     0.0263  0.391     0.495   1.00    3157.    2271.
+#> 4 study_sd1   0.130     0.0291  0.0712    0.188   1.00    1788.    1020.
+#> 5 study_sd2   0.0600    0.0202  0.0169    0.0981  1.00    1586.     828.
+#> 6 es_sd1      0.161     0.0257  0.111     0.212   1.00    1794.    1697.
+#> 7 es_sd2      0.0371    0.0233  0.00133   0.0858  1.00    1441.     875.
 coef(fit)
-#>        beta       alpha          mu       sd_u1       sd_u2        tau1 
-#>  0.45604811 -0.03940466  0.44384508  0.12927320  0.05942022  0.16006571 
-#>        tau2 
-#>  0.03714276 
+#>        beta       alpha          mu   study_sd1   study_sd2      es_sd1 
+#>  0.45636082 -0.03936947  0.44376653  0.12970949  0.06001773  0.16071725 
+#>      es_sd2 
+#>  0.03708056 
 
 # study-specific sampling correlations
-gh_reg(persist_sim, es1, se1, es2, se2, study = study, rho = rho, chains = 2)
+gh_reg(persist_sim, es1, se1, es2, se2, study = study, rho = rho,
+       chains = 2, iter_sampling = 2000)
 #> Gilbert-Himmelsbach persistence meta-regression
 #> 3-level model: 174 pairs of effect sizes in 60 studies
 #> Sampling correlation (rho): varies, 0.23 to 0.94 (mean 0.67)
-#> Backend: rstan, 2 chains x 1000 draws; 0 divergent transitions
+#> Backend: rstan, 2 chains x 2000 draws; 0 divergent transitions
 #> 
 #> # A tibble: 7 × 8
-#>   term  estimate std.error ci.lower ci.upper  rhat ess_bulk ess_tail
-#>   <chr>    <dbl>     <dbl>    <dbl>    <dbl> <dbl>    <dbl>    <dbl>
-#> 1 beta    0.330     0.0882   0.147    0.497   1.00     774.     872.
-#> 2 alpha   0.0150    0.0418  -0.0650   0.0999  1.00     778.     795.
-#> 3 mu      0.443     0.0270   0.389    0.497   1.00    1576.    1392.
-#> 4 sd_u1   0.139     0.0274   0.0850   0.193   1.00    1364.     928.
-#> 5 sd_u2   0.0615    0.0212   0.0130   0.0992  1.00     956.     437.
-#> 6 tau1    0.161     0.0243   0.115    0.210   1.00    1097.    1291.
-#> 7 tau2    0.0599    0.0239   0.0108   0.103   1.00     975.     540.
+#>   term      estimate std.error ci.lower ci.upper  rhat ess_bulk ess_tail
+#>   <chr>        <dbl>     <dbl>    <dbl>    <dbl> <dbl>    <dbl>    <dbl>
+#> 1 beta        0.331     0.0921  0.142      0.507 1.00     1582.    1847.
+#> 2 alpha       0.0148    0.0438 -0.0704     0.103 1.00     1589.    1840.
+#> 3 mu          0.443     0.0265  0.392      0.494 1.00     2817.    2331.
+#> 4 study_sd1   0.139     0.0276  0.0850     0.194 1.000    2788.    1950.
+#> 5 study_sd2   0.0613    0.0216  0.0134     0.101 1.00     1812.     826.
+#> 6 es_sd1      0.161     0.0251  0.114      0.212 1.00     2189.    2204.
+#> 7 es_sd2      0.0601    0.0239  0.00997    0.103 1.00     2076.    1214.
 # }
 ```

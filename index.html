@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Persistence Meta-Regression Adjusted for Correlated Sampling Error • ghreg</title>
-<script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- katex math --><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script><script src="katex-auto.js"></script><script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
@@ -23,7 +24,7 @@
 
     <a class="navbar-brand me-2" href="index.html">ghreg</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -84,28 +85,28 @@
 <span><span class="co">#&gt; Backend: cmdstanr, 4 chains x 1000 draws; 0 divergent transitions</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; # A tibble: 7 × 8</span></span>
-<span><span class="co">#&gt;   term  estimate std.error ci.lower ci.upper  rhat ess_bulk ess_tail</span></span>
-<span><span class="co">#&gt;   &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1 beta    0.334     0.0908  0.149      0.503  1.00    1220.    1624.</span></span>
-<span><span class="co">#&gt; 2 alpha   0.0139    0.0433 -0.0672     0.103  1.00    1266.    1752.</span></span>
-<span><span class="co">#&gt; 3 mu      0.444     0.0268  0.391      0.496  1.00    3036.    2288.</span></span>
-<span><span class="co">#&gt; 4 sd_u1   0.139     0.0290  0.0815     0.196  1.00    3042.    1628.</span></span>
-<span><span class="co">#&gt; 5 sd_u2   0.0621    0.0221  0.0106     0.104  1.01    1209.     552.</span></span>
-<span><span class="co">#&gt; 6 tau1    0.161     0.0241  0.116      0.210  1.00    2106.    2258.</span></span>
-<span><span class="co">#&gt; 7 tau2    0.0580    0.0251  0.00359    0.104  1.00     943.     468.</span></span></code></pre></div>
+<span><span class="co">#&gt;   term      estimate std.error ci.lower ci.upper  rhat ess_bulk ess_tail</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;        &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1 beta        0.334     0.0908  0.149      0.503  1.00    1220.    1624.</span></span>
+<span><span class="co">#&gt; 2 alpha       0.0139    0.0433 -0.0672     0.103  1.00    1266.    1752.</span></span>
+<span><span class="co">#&gt; 3 mu          0.444     0.0268  0.391      0.496  1.00    3036.    2288.</span></span>
+<span><span class="co">#&gt; 4 study_sd1   0.139     0.0290  0.0815     0.196  1.00    3042.    1628.</span></span>
+<span><span class="co">#&gt; 5 study_sd2   0.0621    0.0221  0.0106     0.104  1.01    1209.     552.</span></span>
+<span><span class="co">#&gt; 6 es_sd1      0.161     0.0241  0.116      0.210  1.00    2106.    2258.</span></span>
+<span><span class="co">#&gt; 7 es_sd2      0.0580    0.0251  0.00359    0.104  1.00     943.     468.</span></span></code></pre></div>
 <p>The summary is a tibble (<code>fit$summary</code>) with broom-style column names. <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> recomputes it at another interval level:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit</span>, ci.level <span class="op">=</span> <span class="fl">0.9</span>, diagnostics <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 7 × 5</span></span>
-<span><span class="co">#&gt;   term  estimate std.error ci.lower ci.upper</span></span>
-<span><span class="co">#&gt;   &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1 beta    0.334     0.0908   0.183    0.478 </span></span>
-<span><span class="co">#&gt; 2 alpha   0.0139    0.0433  -0.0547   0.0852</span></span>
-<span><span class="co">#&gt; 3 mu      0.444     0.0268   0.399    0.488 </span></span>
-<span><span class="co">#&gt; 4 sd_u1   0.139     0.0290   0.0922   0.187 </span></span>
-<span><span class="co">#&gt; 5 sd_u2   0.0621    0.0221   0.0218   0.0965</span></span>
-<span><span class="co">#&gt; 6 tau1    0.161     0.0241   0.123    0.201 </span></span>
-<span><span class="co">#&gt; 7 tau2    0.0580    0.0251   0.0110   0.0964</span></span></code></pre></div>
+<span><span class="co">#&gt;   term      estimate std.error ci.lower ci.upper</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;        &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1 beta        0.334     0.0908   0.183    0.478 </span></span>
+<span><span class="co">#&gt; 2 alpha       0.0139    0.0433  -0.0547   0.0852</span></span>
+<span><span class="co">#&gt; 3 mu          0.444     0.0268   0.399    0.488 </span></span>
+<span><span class="co">#&gt; 4 study_sd1   0.139     0.0290   0.0922   0.187 </span></span>
+<span><span class="co">#&gt; 5 study_sd2   0.0621    0.0221   0.0218   0.0965</span></span>
+<span><span class="co">#&gt; 6 es_sd1      0.161     0.0241   0.123    0.201 </span></span>
+<span><span class="co">#&gt; 7 es_sd2      0.0580    0.0251   0.0110   0.0964</span></span></code></pre></div>
 <p>The correlation of outcomes across time is rarely reported, so the paper treats it as a sensitivity parameter. <code><a href="reference/gh_sensitivity.html">gh_sensitivity()</a></code> refits over a grid of values and returns the results as a tibble:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sens</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/gh_sensitivity.html">gh_sensitivity</a></span><span class="op">(</span><span class="va">persist_sim</span>, <span class="va">es1</span>, <span class="va">se1</span>, <span class="va">es2</span>, <span class="va">se2</span>, study <span class="op">=</span> <span class="va">study</span>,</span>

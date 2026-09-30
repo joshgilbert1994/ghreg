@@ -70,34 +70,34 @@ return the draws.
 ``` r
 # \donttest{
 fit <- gh_reg(persist_sim, es1, se1, es2, se2, study = study, rho = 0.6,
-              chains = 2)
+              chains = 2, iter_sampling = 2000)
 #> Compiling the Stan model (once per machine; about a minute)...
 summary(fit)
 #> # A tibble: 7 × 8
-#>   term  estimate std.error ci.lower ci.upper  rhat ess_bulk ess_tail
-#>   <chr>    <dbl>     <dbl>    <dbl>    <dbl> <dbl>    <dbl>    <dbl>
-#> 1 beta    0.459     0.0884  0.279     0.631   1.00     828.    1130.
-#> 2 alpha  -0.0405    0.0417 -0.122     0.0415  1.00     832.    1251.
-#> 3 mu      0.443     0.0267  0.390     0.496   1.00    1737.    1241.
-#> 4 sd_u1   0.129     0.0308  0.0671    0.189   1.00    1082.     436.
-#> 5 sd_u2   0.0597    0.0209  0.0139    0.0989  1.00     917.     608.
-#> 6 tau1    0.162     0.0256  0.111     0.212   1.00    1004.     988.
-#> 7 tau2    0.0378    0.0234  0.00202   0.0873  1.00    1038.     661.
+#>   term      estimate std.error ci.lower ci.upper  rhat ess_bulk ess_tail
+#>   <chr>        <dbl>     <dbl>    <dbl>    <dbl> <dbl>    <dbl>    <dbl>
+#> 1 beta        0.460     0.0907  0.275     0.633   1.00    1475.    2323.
+#> 2 alpha      -0.0407    0.0431 -0.124     0.0440  1.00    1509.    2477.
+#> 3 mu          0.443     0.0262  0.391     0.495   1.00    3674.    2576.
+#> 4 study_sd1   0.129     0.0304  0.0671    0.188   1.00    2135.    1100.
+#> 5 study_sd2   0.0587    0.0212  0.00903   0.0965  1.00    1068.     362.
+#> 6 es_sd1      0.162     0.0259  0.111     0.213   1.00    1951.    2092.
+#> 7 es_sd2      0.0376    0.0235  0.00187   0.0870  1.00    1526.    1114.
 summary(fit, ci.level = 0.9, diagnostics = FALSE)
 #> # A tibble: 7 × 5
-#>   term  estimate std.error ci.lower ci.upper
-#>   <chr>    <dbl>     <dbl>    <dbl>    <dbl>
-#> 1 beta    0.459     0.0884  0.312     0.603 
-#> 2 alpha  -0.0405    0.0417 -0.110     0.0295
-#> 3 mu      0.443     0.0267  0.400     0.488 
-#> 4 sd_u1   0.129     0.0308  0.0789    0.178 
-#> 5 sd_u2   0.0597    0.0209  0.0219    0.0914
-#> 6 tau1    0.162     0.0256  0.119     0.204 
-#> 7 tau2    0.0378    0.0234  0.00410   0.0791
+#>   term      estimate std.error ci.lower ci.upper
+#>   <chr>        <dbl>     <dbl>    <dbl>    <dbl>
+#> 1 beta        0.460     0.0907  0.308     0.606 
+#> 2 alpha      -0.0407    0.0431 -0.112     0.0307
+#> 3 mu          0.443     0.0262  0.401     0.487 
+#> 4 study_sd1   0.129     0.0304  0.0790    0.177 
+#> 5 study_sd2   0.0587    0.0212  0.0184    0.0902
+#> 6 es_sd1      0.162     0.0259  0.120     0.205 
+#> 7 es_sd2      0.0376    0.0235  0.00365   0.0781
 coef(fit)
-#>        beta       alpha          mu       sd_u1       sd_u2        tau1 
-#>  0.45925798 -0.04052779  0.44348418  0.12884894  0.05967261  0.16182152 
-#>        tau2 
-#>  0.03782099 
+#>        beta       alpha          mu   study_sd1   study_sd2      es_sd1 
+#>  0.46006611 -0.04074860  0.44327315  0.12903693  0.05871951  0.16177541 
+#>      es_sd2 
+#>  0.03756482 
 # }
 ```

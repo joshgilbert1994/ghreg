@@ -32,10 +32,10 @@ gh_sensitivity(
 
 - parameters:
 
-  Parameters to report: any of `"beta"`, `"alpha"`, `"mu"`, `"tau1"`,
-  `"tau2"`, and, for the three-level model, `"sd_u1"` and `"sd_u2"`.
-  Every fit estimates all parameters; this only chooses which rows are
-  kept. Unknown names are an error.
+  Parameters to report: any of `"beta"`, `"alpha"`, `"mu"`, `"es_sd1"`,
+  `"es_sd2"`, and, for the three-level model, `"study_sd1"` and
+  `"study_sd2"`. Every fit estimates all parameters; this only chooses
+  which rows are kept. Unknown names are an error.
 
 - ci.level:
 
@@ -54,15 +54,16 @@ and the number of divergent transitions. Plot it with
 ``` r
 # \donttest{
 sens <- gh_sensitivity(persist_sim, es1, se1, es2, se2, study = study,
-                       rho = seq(0, 0.9, by = 0.3), chains = 2)
+                       rho = seq(0, 0.9, by = 0.3), chains = 2,
+                       iter_sampling = 2000)
 sens
 #> # A tibble: 4 × 10
 #>     rho term  estimate std.error ci.lower ci.upper  rhat ess_bulk ess_tail
 #>   <dbl> <chr>    <dbl>     <dbl>    <dbl>    <dbl> <dbl>    <dbl>    <dbl>
-#> 1   0   beta     0.675    0.0811  0.529      0.845  1.00    1240.    1180.
-#> 2   0.3 beta     0.612    0.0848  0.446      0.787  1.00     660.     614.
-#> 3   0.6 beta     0.452    0.0896  0.273      0.619  1.00     672.     905.
-#> 4   0.9 beta     0.208    0.0977  0.00593    0.386  1.00     672.     958.
+#> 1   0   beta     0.678    0.0821  0.528      0.850 1.00     1874.    1840.
+#> 2   0.3 beta     0.611    0.0845  0.449      0.787 1.00     1546.    1747.
+#> 3   0.6 beta     0.457    0.0910  0.273      0.628 1.00     1399.    1852.
+#> 4   0.9 beta     0.208    0.0961  0.00924    0.387 1.000    1597.    2003.
 #> # ℹ 1 more variable: divergences <int>
 plot(sens)
 

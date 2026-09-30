@@ -18,10 +18,10 @@ gh_simulate(
   mu = 0.5,
   alpha = 0,
   beta = 0.5,
-  tau1 = 0.25,
-  tau2 = 0,
-  sd_u1 = 0,
-  sd_u2 = 0
+  es_sd1 = 0.25,
+  es_sd2 = 0,
+  study_sd1 = 0,
+  study_sd2 = 0
 )
 ```
 
@@ -57,23 +57,24 @@ gh_simulate(
   Conditional persistence: the slope of the true follow-up effect on the
   true endline effect.
 
-- tau1:
+- es_sd1:
 
-  SD of the true endline effects across pairs within a study.
+  SD of the true endline effects across effect-size pairs within a
+  study.
 
-- tau2:
+- es_sd2:
 
-  Residual SD of the true follow-up effects across pairs within a study,
-  given the true endline effects.
+  Residual SD of the true follow-up effects across effect-size pairs
+  within a study, given the true endline effects.
 
-- sd_u1:
+- study_sd1:
 
-  SD of the study effects on the true endline effects.
+  Between-study SD of the true endline effects.
 
-- sd_u2:
+- study_sd2:
 
-  SD of the study effects on the true follow-up effects, given the true
-  endline effects.
+  Between-study residual SD of the true follow-up effects, given the
+  true endline effects.
 
 ## Value
 
@@ -90,16 +91,20 @@ The true effects follow the model in
 [`gh_reg()`](https://joshgilbert1994.github.io/ghreg/reference/gh_reg.md):
 \$\$\theta\_{1jk} = \mu + u\_{1k} + \epsilon\_{1jk}\$\$
 \$\$\theta\_{2jk} = \alpha + \beta \theta\_{1jk} + u\_{2k} +
-\epsilon\_{2jk}\$\$ with study effects \\u\_{1k} \sim N(0, sd\_{u1}^2)\\
-and \\u\_{2k} \sim N(0, sd\_{u2}^2)\\ shared by every pair in study
-\\k\\, and pair-level deviations \\\epsilon\_{1jk} \sim N(0, \tau_1^2)\\
-and \\\epsilon\_{2jk} \sim N(0, \tau_2^2)\\.
+\epsilon\_{2jk}\$\$ with study effects \\u\_{1k} \sim N(0,
+\sigma\_{S1}^2)\\ and \\u\_{2k} \sim N(0, \sigma\_{S2}^2)\\ shared by
+every pair in study \\k\\, and pair-level deviations \\\epsilon\_{1jk}
+\sim N(0, \sigma\_{E1}^2)\\ and \\\epsilon\_{2jk} \sim N(0,
+\sigma\_{E2}^2)\\. The arguments `study_sd1`, `study_sd2`, `es_sd1`, and
+`es_sd2` set \\\sigma\_{S1}\\, \\\sigma\_{S2}\\, \\\sigma\_{E1}\\, and
+\\\sigma\_{E2}\\, and have the same names as in the output of
+[`gh_reg()`](https://joshgilbert1994.github.io/ghreg/reference/gh_reg.md).
 
-With `sd_u1 = sd_u2 = 0` (the default) there is no study-level
+With `study_sd1 = study_sd2 = 0` (the default) there is no study-level
 variation: pairs from the same study are independent, so the data follow
-the two-level model and the study grouping has no effect. Set `sd_u1` or
-`sd_u2` above 0, with `pairs_per_study` above 1, to simulate data for
-the three-level model.
+the two-level model and the study grouping has no effect. Set
+`study_sd1` or `study_sd2` above 0, with `pairs_per_study` above 1, to
+simulate data for the three-level model.
 
 Each pair is simulated as its own trial, so sampling errors are
 independent across pairs, including pairs from the same study. In real
@@ -136,7 +141,7 @@ coef(lm(es2 ~ es1, d))
 
 # three-level data: 40 studies with 3 pairs each and study-level variation
 d3 <- gh_simulate(n_studies = 40, pairs_per_study = 3, rho = 0.7,
-                  tau1 = 0.15, sd_u1 = 0.2, sd_u2 = 0.05)
+                  es_sd1 = 0.15, study_sd1 = 0.2, study_sd2 = 0.05)
 table(table(d3$study))
 #> 
 #>  3 

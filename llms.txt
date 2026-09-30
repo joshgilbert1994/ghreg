@@ -54,15 +54,15 @@ fit
 #> Backend: cmdstanr, 4 chains x 1000 draws; 0 divergent transitions
 #> 
 #> # A tibble: 7 × 8
-#>   term  estimate std.error ci.lower ci.upper  rhat ess_bulk ess_tail
-#>   <chr>    <dbl>     <dbl>    <dbl>    <dbl> <dbl>    <dbl>    <dbl>
-#> 1 beta    0.334     0.0908  0.149      0.503  1.00    1220.    1624.
-#> 2 alpha   0.0139    0.0433 -0.0672     0.103  1.00    1266.    1752.
-#> 3 mu      0.444     0.0268  0.391      0.496  1.00    3036.    2288.
-#> 4 sd_u1   0.139     0.0290  0.0815     0.196  1.00    3042.    1628.
-#> 5 sd_u2   0.0621    0.0221  0.0106     0.104  1.01    1209.     552.
-#> 6 tau1    0.161     0.0241  0.116      0.210  1.00    2106.    2258.
-#> 7 tau2    0.0580    0.0251  0.00359    0.104  1.00     943.     468.
+#>   term      estimate std.error ci.lower ci.upper  rhat ess_bulk ess_tail
+#>   <chr>        <dbl>     <dbl>    <dbl>    <dbl> <dbl>    <dbl>    <dbl>
+#> 1 beta        0.334     0.0908  0.149      0.503  1.00    1220.    1624.
+#> 2 alpha       0.0139    0.0433 -0.0672     0.103  1.00    1266.    1752.
+#> 3 mu          0.444     0.0268  0.391      0.496  1.00    3036.    2288.
+#> 4 study_sd1   0.139     0.0290  0.0815     0.196  1.00    3042.    1628.
+#> 5 study_sd2   0.0621    0.0221  0.0106     0.104  1.01    1209.     552.
+#> 6 es_sd1      0.161     0.0241  0.116      0.210  1.00    2106.    2258.
+#> 7 es_sd2      0.0580    0.0251  0.00359    0.104  1.00     943.     468.
 ```
 
 The summary is a tibble (`fit$summary`) with broom-style column names.
@@ -73,15 +73,15 @@ another interval level:
 
 summary(fit, ci.level = 0.9, diagnostics = FALSE)
 #> # A tibble: 7 × 5
-#>   term  estimate std.error ci.lower ci.upper
-#>   <chr>    <dbl>     <dbl>    <dbl>    <dbl>
-#> 1 beta    0.334     0.0908   0.183    0.478 
-#> 2 alpha   0.0139    0.0433  -0.0547   0.0852
-#> 3 mu      0.444     0.0268   0.399    0.488 
-#> 4 sd_u1   0.139     0.0290   0.0922   0.187 
-#> 5 sd_u2   0.0621    0.0221   0.0218   0.0965
-#> 6 tau1    0.161     0.0241   0.123    0.201 
-#> 7 tau2    0.0580    0.0251   0.0110   0.0964
+#>   term      estimate std.error ci.lower ci.upper
+#>   <chr>        <dbl>     <dbl>    <dbl>    <dbl>
+#> 1 beta        0.334     0.0908   0.183    0.478 
+#> 2 alpha       0.0139    0.0433  -0.0547   0.0852
+#> 3 mu          0.444     0.0268   0.399    0.488 
+#> 4 study_sd1   0.139     0.0290   0.0922   0.187 
+#> 5 study_sd2   0.0621    0.0221   0.0218   0.0965
+#> 6 es_sd1      0.161     0.0241   0.123    0.201 
+#> 7 es_sd2      0.0580    0.0251   0.0110   0.0964
 ```
 
 The correlation of outcomes across time is rarely reported, so the paper

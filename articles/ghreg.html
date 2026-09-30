@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Persistence meta-regression with ghreg • ghreg</title>
-<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- katex math --><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script><script src="../katex-auto.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
@@ -20,7 +21,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ghreg</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -78,36 +79,25 @@ correction.</p>
 <h2 id="why-the-naive-slope-is-biased">Why the naive slope is biased<a class="anchor" aria-label="anchor" href="#why-the-naive-slope-is-biased"></a>
 </h2>
 <p>Write the observed effect sizes as true effects plus sampling error,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>δ</mi><mi>t</mi></msub><mo>=</mo><msub><mi>θ</mi><mi>t</mi></msub><mo>+</mo><msub><mi>e</mi><mi>t</mi></msub></mrow><annotation encoding="application/x-tex">\delta_{t} = \theta_{t} + e_{t}</annotation></semantics></math>,
-with true effects related by
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>θ</mi><mn>2</mn></msub><mo>=</mo><mi>α</mi><mo>+</mo><mi>β</mi><msub><mi>θ</mi><mn>1</mn></msub><mo>+</mo><mi>η</mi></mrow><annotation encoding="application/x-tex">\theta_2 = \alpha + \beta\theta_1 + \eta</annotation></semantics></math>.
-If the sampling errors are correlated
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ρ</mi><annotation encoding="application/x-tex">\rho</annotation></semantics></math>,
-the least-squares slope of
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>δ</mi><mn>2</mn></msub><annotation encoding="application/x-tex">\delta_2</annotation></semantics></math>
-on
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>δ</mi><mn>1</mn></msub><annotation encoding="application/x-tex">\delta_1</annotation></semantics></math>
-converges to
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>β</mi><annotation encoding="application/x-tex">\beta</annotation></semantics></math>
-plus</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><munder><munder><mfrac><mrow><mi>ρ</mi><msqrt><mrow><mrow><mi mathvariant="normal">V</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">r</mi></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>e</mi><mn>1</mn></msub><mo stretchy="false" form="postfix">)</mo><mrow><mi mathvariant="normal">V</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">r</mi></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>e</mi><mn>2</mn></msub><mo stretchy="false" form="postfix">)</mo></mrow></msqrt></mrow><mrow><mrow><mi mathvariant="normal">V</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">r</mi></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>θ</mi><mn>1</mn></msub><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mrow><mi mathvariant="normal">V</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">r</mi></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>e</mi><mn>1</mn></msub><mo stretchy="false" form="postfix">)</mo></mrow></mfrac><mo accent="true">⏟</mo></munder><mtext mathvariant="normal">correlation-driven bias</mtext></munder><mspace width="0.278em"></mspace><mo>−</mo><mspace width="0.278em"></mspace><munder><munder><mfrac><mrow><mi>β</mi><mspace width="0.167em"></mspace><mrow><mi mathvariant="normal">V</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">r</mi></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>e</mi><mn>1</mn></msub><mo stretchy="false" form="postfix">)</mo></mrow><mrow><mrow><mi mathvariant="normal">V</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">r</mi></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>θ</mi><mn>1</mn></msub><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mrow><mi mathvariant="normal">V</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">r</mi></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>e</mi><mn>1</mn></msub><mo stretchy="false" form="postfix">)</mo></mrow></mfrac><mo accent="true">⏟</mo></munder><mtext mathvariant="normal">attenuation bias</mtext></munder><mi>.</mi></mrow><annotation encoding="application/x-tex">
-\underbrace{\frac{\rho\sqrt{\mathrm{Var}(e_1)\mathrm{Var}(e_2)}}{\mathrm{Var}(\theta_1) + \mathrm{Var}(e_1)}}_{\text{correlation-driven bias}}
+<span class="math inline">\delta_{t} = \theta_{t} + e_{t}</span>, with
+true effects related by <span class="math inline">\theta_2 = \alpha +
+\beta\theta_1 + \eta</span>. If the sampling errors are correlated <span class="math inline">\rho</span>, the least-squares slope of <span class="math inline">\delta_2</span> on <span class="math inline">\delta_1</span> converges to <span class="math inline">\beta</span> plus</p>
+<p><span class="math display">
+\underbrace{\frac{\rho\sqrt{\mathrm{Var}(e_1)\mathrm{Var}(e_2)}}{\mathrm{Var}(\theta_1)
++ \mathrm{Var}(e_1)}}_{\text{correlation-driven bias}}
 \; - \;
-\underbrace{\frac{\beta\,\mathrm{Var}(e_1)}{\mathrm{Var}(\theta_1) + \mathrm{Var}(e_1)}}_{\text{attenuation bias}}.
-</annotation></semantics></math></p>
-<p>With
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\rho = 0</annotation></semantics></math>
-this is the familiar attenuation from measurement error in a predictor.
-For a difference in means with a constant treatment effect,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ρ</mi><annotation encoding="application/x-tex">\rho</annotation></semantics></math>
-equals the correlation of the outcome across time (its test-retest
-reliability), which is typically well above zero. When
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo>&gt;</mo><mi>β</mi></mrow><annotation encoding="application/x-tex">\rho &gt; \beta</annotation></semantics></math>
-and the two sampling variances are similar, the correlation term wins
-and the naive slope overstates persistence. A standard
-errors-in-variables correction, which assumes
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\rho = 0</annotation></semantics></math>,
-makes things worse.</p>
+\underbrace{\frac{\beta\,\mathrm{Var}(e_1)}{\mathrm{Var}(\theta_1) +
+\mathrm{Var}(e_1)}}_{\text{attenuation bias}}.
+</span></p>
+<p>With <span class="math inline">\rho = 0</span> this is the familiar
+attenuation from measurement error in a predictor. For a difference in
+means with a constant treatment effect, <span class="math inline">\rho</span> equals the correlation of the outcome
+across time (its test-retest reliability), which is typically well above
+zero. When <span class="math inline">\rho &gt; \beta</span> and the two
+sampling variances are similar, the correlation term wins and the naive
+slope overstates persistence. A standard errors-in-variables correction,
+which assumes <span class="math inline">\rho = 0</span>, makes things
+worse.</p>
 </div>
 <div class="section level2">
 <h2 id="the-data">The data<a class="anchor" aria-label="anchor" href="#the-data"></a>
@@ -135,16 +125,26 @@ the paper’s simulations, overstates persistence:</p>
 <span><span class="co">#&gt; (Intercept)         es1 </span></span>
 <span><span class="co">#&gt; -0.07439222  0.53506611</span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">es2</span> <span class="op">~</span> <span class="va">es1</span>, data <span class="op">=</span> <span class="va">persist_sim</span>, pch <span class="op">=</span> <span class="fl">19</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/adjustcolor.html" class="external-link">adjustcolor</a></span><span class="op">(</span><span class="st">"grey30"</span>, <span class="fl">0.5</span><span class="op">)</span>,</span>
-<span>     xlab <span class="op">=</span> <span class="st">"Endline effect size"</span>, ylab <span class="op">=</span> <span class="st">"Follow-up effect size"</span>, las <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span><span class="va">naive</span>, lwd <span class="op">=</span> <span class="fl">2</span>, col <span class="op">=</span> <span class="st">"#D55E00"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.4</span>, lwd <span class="op">=</span> <span class="fl">2</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topleft"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Naive fit"</span>, <span class="st">"True relation"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#D55E00"</span>, <span class="st">"black"</span><span class="op">)</span>,</span>
-<span>       lty <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">2</span>, bty <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
+<span><span class="va">lines</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>line <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Naive fit"</span>, <span class="st">"True relation"</span><span class="op">)</span>,</span>
+<span>                    intercept <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">naive</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="fl">0</span><span class="op">)</span>,</span>
+<span>                    slope <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">naive</span><span class="op">)</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span>, <span class="fl">0.4</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">persist_sim</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">es1</span>, <span class="va">es2</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_abline</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>intercept <span class="op">=</span> <span class="va">intercept</span>, slope <span class="op">=</span> <span class="va">slope</span>, colour <span class="op">=</span> <span class="va">line</span>,</span>
+<span>                  linetype <span class="op">=</span> <span class="va">line</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">lines</span>, linewidth <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_colour_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Naive fit"</span> <span class="op">=</span> <span class="st">"#D55E00"</span>,</span>
+<span>                                 <span class="st">"True relation"</span> <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_linetype_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Naive fit"</span> <span class="op">=</span> <span class="st">"solid"</span>,</span>
+<span>                                   <span class="st">"True relation"</span> <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Endline effect size"</span>, y <span class="op">=</span> <span class="st">"Follow-up effect size"</span>,</span>
+<span>       colour <span class="op">=</span> <span class="cn">NULL</span>, linetype <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="figures/scatter-1.png" alt="Observed effect sizes. The dashed line is the true relation (slope 0.4); the solid line is the naive fit." width="90%"><p class="caption">
-Observed effect sizes. The dashed line is the true relation (slope 0.4);
-the solid line is the naive fit.
+<img src="figures/scatter-1.png" alt="Observed effect sizes, with the naive fit and the true relation (slope 0.4)." width="90%"><p class="caption">
+Observed effect sizes, with the naive fit and the true relation (slope
+0.4).
 </p>
 </div>
 </div>
@@ -165,15 +165,15 @@ data are simulated, so we pass the column:</p>
 <span><span class="co">#&gt; Backend: cmdstanr, 4 chains x 1000 draws; 0 divergent transitions</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; # A tibble: 7 × 8</span></span>
-<span><span class="co">#&gt;   term  estimate std.error ci.lower ci.upper  rhat ess_bulk ess_tail</span></span>
-<span><span class="co">#&gt;   &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1 beta    0.334     0.0908  0.149      0.503  1.00    1220.    1624.</span></span>
-<span><span class="co">#&gt; 2 alpha   0.0139    0.0433 -0.0672     0.103  1.00    1266.    1752.</span></span>
-<span><span class="co">#&gt; 3 mu      0.444     0.0268  0.391      0.496  1.00    3036.    2288.</span></span>
-<span><span class="co">#&gt; 4 sd_u1   0.139     0.0290  0.0815     0.196  1.00    3042.    1628.</span></span>
-<span><span class="co">#&gt; 5 sd_u2   0.0621    0.0221  0.0106     0.104  1.01    1209.     552.</span></span>
-<span><span class="co">#&gt; 6 tau1    0.161     0.0241  0.116      0.210  1.00    2106.    2258.</span></span>
-<span><span class="co">#&gt; 7 tau2    0.0580    0.0251  0.00359    0.104  1.00     943.     468.</span></span></code></pre></div>
+<span><span class="co">#&gt;   term      estimate std.error ci.lower ci.upper  rhat ess_bulk ess_tail</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;        &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1 beta        0.334     0.0908  0.149      0.503  1.00    1220.    1624.</span></span>
+<span><span class="co">#&gt; 2 alpha       0.0139    0.0433 -0.0672     0.103  1.00    1266.    1752.</span></span>
+<span><span class="co">#&gt; 3 mu          0.444     0.0268  0.391      0.496  1.00    3036.    2288.</span></span>
+<span><span class="co">#&gt; 4 study_sd1   0.139     0.0290  0.0815     0.196  1.00    3042.    1628.</span></span>
+<span><span class="co">#&gt; 5 study_sd2   0.0621    0.0221  0.0106     0.104  1.01    1209.     552.</span></span>
+<span><span class="co">#&gt; 6 es_sd1      0.161     0.0241  0.116      0.210  1.00    2106.    2258.</span></span>
+<span><span class="co">#&gt; 7 es_sd2      0.0580    0.0251  0.00359    0.104  1.00     943.     468.</span></span></code></pre></div>
 <p>The posterior mean of <code>beta</code> is well below the naive
 slope, and its 95% interval covers the true value of 0.4. The other
 parameters are</p>
@@ -184,13 +184,19 @@ effect is 0;</li>
 <li>
 <code>mu</code>: mean true endline effect;</li>
 <li>
-<code>sd_u1</code>, <code>sd_u2</code>: between-study SDs of the
-true endline effects and of the follow-up effects given the endline
+<code>study_sd1</code>: between-study SD of the true endline
 effects;</li>
 <li>
-<code>tau1</code>, <code>tau2</code>: the same SDs within
-studies.</li>
+<code>study_sd2</code>: between-study <em>residual</em> SD of the
+true follow-up effects, given the true endline effects;</li>
+<li>
+<code>es_sd1</code>, <code>es_sd2</code>: the same two SDs across
+effect-size pairs within a study.</li>
 </ul>
+<p>The SDs ending in 2 are residual SDs: they measure how much the true
+follow-up effects vary beyond what the true endline effects predict, so
+the total SD of the true follow-up effects is at least as large (larger
+whenever <code>beta</code> is not 0).</p>
 <p>Because the data have several pairs per study, <code><a href="../reference/gh_reg.html">gh_reg()</a></code>
 fit the three-level model. With <code>study = NULL</code>, or one pair
 per study, it fits the two-level model in the paper.</p>
@@ -208,15 +214,15 @@ level:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit</span>, ci.level <span class="op">=</span> <span class="fl">0.9</span>, diagnostics <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 7 × 5</span></span>
-<span><span class="co">#&gt;   term  estimate std.error ci.lower ci.upper</span></span>
-<span><span class="co">#&gt;   &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1 beta    0.334     0.0908   0.183    0.478 </span></span>
-<span><span class="co">#&gt; 2 alpha   0.0139    0.0433  -0.0547   0.0852</span></span>
-<span><span class="co">#&gt; 3 mu      0.444     0.0268   0.399    0.488 </span></span>
-<span><span class="co">#&gt; 4 sd_u1   0.139     0.0290   0.0922   0.187 </span></span>
-<span><span class="co">#&gt; 5 sd_u2   0.0621    0.0221   0.0218   0.0965</span></span>
-<span><span class="co">#&gt; 6 tau1    0.161     0.0241   0.123    0.201 </span></span>
-<span><span class="co">#&gt; 7 tau2    0.0580    0.0251   0.0110   0.0964</span></span></code></pre></div>
+<span><span class="co">#&gt;   term      estimate std.error ci.lower ci.upper</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;        &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1 beta        0.334     0.0908   0.183    0.478 </span></span>
+<span><span class="co">#&gt; 2 alpha       0.0139    0.0433  -0.0547   0.0852</span></span>
+<span><span class="co">#&gt; 3 mu          0.444     0.0268   0.399    0.488 </span></span>
+<span><span class="co">#&gt; 4 study_sd1   0.139     0.0290   0.0922   0.187 </span></span>
+<span><span class="co">#&gt; 5 study_sd2   0.0621    0.0221   0.0218   0.0965</span></span>
+<span><span class="co">#&gt; 6 es_sd1      0.161     0.0241   0.123    0.201 </span></span>
+<span><span class="co">#&gt; 7 es_sd2      0.0580    0.0251   0.0110   0.0964</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="posterior-draws">Posterior draws<a class="anchor" aria-label="anchor" href="#posterior-draws"></a>
@@ -264,18 +270,18 @@ assumed sampling correlation. The dashed lines mark the naive slope and
 the true value.
 </p>
 </div>
-<p>Assuming
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\rho = 0</annotation></semantics></math>
-corrects only for attenuation, so it gives a <em>larger</em> slope than
-the naive fit. As the assumed correlation rises, the estimate falls
-below the naive slope. For these data, the corrected slope is smaller
-than the naive one for any assumed correlation above about 0.5.
-Reporting the whole curve lets readers apply their own beliefs about how
-stable the outcomes are.</p>
+<p>Assuming <span class="math inline">\rho = 0</span> corrects only for
+attenuation, so it gives a <em>larger</em> slope than the naive fit. As
+the assumed correlation rises, the estimate falls below the naive slope.
+For these data, the corrected slope is smaller than the naive one for
+any assumed correlation above about 0.5. Reporting the whole curve lets
+readers apply their own beliefs about how stable the outcomes are.</p>
 <p><code>sens</code> is a tibble with the same columns as
 <code>summary(fit)</code>, plus <code>rho</code> and the number of
-divergent transitions, so it’s easy to filter, tabulate, or plot with
-other tools such as ggplot2.</p>
+divergent transitions, so it’s easy to filter or tabulate.
+<code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> returns a ggplot, so you can restyle it with
+<code>+</code>, for example
+<code>plot(sens) + theme_minimal()</code>.</p>
 </div>
 <div class="section level2">
 <h2 id="options">Options<a class="anchor" aria-label="anchor" href="#options"></a>
@@ -293,7 +299,7 @@ half-Cauchy(0, 0.5) for all SDs. Change them with
 <span><span class="co">#&gt;   mu    ~ normal(0, 1)</span></span>
 <span><span class="co">#&gt;   alpha ~ normal(0, 1)</span></span>
 <span><span class="co">#&gt;   beta  ~ normal(0.5, 0.5)</span></span>
-<span><span class="co">#&gt;   tau1, tau2, sd_u1, sd_u2 ~ half-Cauchy(0, 0.25)</span></span></code></pre></div>
+<span><span class="co">#&gt;   study_sd1, study_sd2, es_sd1, es_sd2 ~ half-Cauchy(0, 0.25)</span></span></code></pre></div>
 <p><strong>Backends.</strong> Models are fit in Stan through rstan or
 cmdstanr. By default ghreg uses cmdstanr when it and CmdStan are
 installed, and rstan otherwise; choose with
@@ -316,75 +322,68 @@ method under designs that resemble your own:</p>
 <span><span class="co">#&gt;      beta </span></span>
 <span><span class="co">#&gt; 0.3690296</span></span></code></pre></div>
 <p>By default the simulated studies have no study-level variation
-(<code>sd_u1 = sd_u2 = 0</code>), so pairs from the same study are
-independent and the data follow the two-level model. To simulate
+(<code>study_sd1 = study_sd2 = 0</code>), so pairs from the same study
+are independent and the data follow the two-level model. To simulate
 three-level data, give studies several pairs and set the study-level SDs
 above zero:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span></span>
-<span><span class="va">d3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gh_simulate.html">gh_simulate</a></span><span class="op">(</span>n_studies <span class="op">=</span> <span class="fl">80</span>, pairs_per_study <span class="op">=</span> <span class="fl">3</span>, n <span class="op">=</span> <span class="fl">150</span>, rho <span class="op">=</span> <span class="fl">0.7</span>, beta <span class="op">=</span> <span class="fl">0.5</span>, tau1 <span class="op">=</span> <span class="fl">0.15</span>, tau2 <span class="op">=</span> <span class="fl">0.05</span>, sd_u1 <span class="op">=</span> <span class="fl">0.2</span>, sd_u2 <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span>
+<span><span class="va">d3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gh_simulate.html">gh_simulate</a></span><span class="op">(</span>n_studies <span class="op">=</span> <span class="fl">80</span>, pairs_per_study <span class="op">=</span> <span class="fl">3</span>, n <span class="op">=</span> <span class="fl">150</span>, rho <span class="op">=</span> <span class="fl">0.7</span>,</span>
+<span>                  beta <span class="op">=</span> <span class="fl">0.5</span>, es_sd1 <span class="op">=</span> <span class="fl">0.15</span>, es_sd2 <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>                  study_sd1 <span class="op">=</span> <span class="fl">0.2</span>, study_sd2 <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span>
 <span><span class="va">fit3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gh_reg.html">gh_reg</a></span><span class="op">(</span><span class="va">d3</span>, <span class="va">es1</span>, <span class="va">se1</span>, <span class="va">es2</span>, <span class="va">se2</span>, study <span class="op">=</span> <span class="va">study</span>, rho <span class="op">=</span> <span class="fl">0.7</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit3</span>, diagnostics <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 7 × 5</span></span>
-<span><span class="co">#&gt;   term  estimate std.error ci.lower ci.upper</span></span>
-<span><span class="co">#&gt;   &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1 beta    0.430     0.0611  0.310     0.546 </span></span>
-<span><span class="co">#&gt; 2 alpha   0.0408    0.0355 -0.0284    0.110 </span></span>
-<span><span class="co">#&gt; 3 mu      0.521     0.0279  0.466     0.575 </span></span>
-<span><span class="co">#&gt; 4 sd_u1   0.215     0.0238  0.171     0.264 </span></span>
-<span><span class="co">#&gt; 5 sd_u2   0.119     0.0138  0.0939    0.148 </span></span>
-<span><span class="co">#&gt; 6 tau1    0.149     0.0173  0.115     0.183 </span></span>
-<span><span class="co">#&gt; 7 tau2    0.0381    0.0197  0.00286   0.0750</span></span></code></pre></div>
+<span><span class="co">#&gt;   term      estimate std.error ci.lower ci.upper</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;        &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1 beta        0.430     0.0611  0.310     0.546 </span></span>
+<span><span class="co">#&gt; 2 alpha       0.0408    0.0355 -0.0284    0.110 </span></span>
+<span><span class="co">#&gt; 3 mu          0.521     0.0279  0.466     0.575 </span></span>
+<span><span class="co">#&gt; 4 study_sd1   0.215     0.0238  0.171     0.264 </span></span>
+<span><span class="co">#&gt; 5 study_sd2   0.119     0.0138  0.0939    0.148 </span></span>
+<span><span class="co">#&gt; 6 es_sd1      0.149     0.0173  0.115     0.183 </span></span>
+<span><span class="co">#&gt; 7 es_sd2      0.0381    0.0197  0.00286   0.0750</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="how-the-model-is-fit">How the model is fit<a class="anchor" aria-label="anchor" href="#how-the-model-is-fit"></a>
 </h2>
-<p>For pair
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>
-in study
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>,</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right; padding-right: 0"><msub><mi>θ</mi><mrow><mn>1</mn><mi>j</mi><mi>k</mi></mrow></msub></mtd><mtd columnalign="left" style="text-align: left; padding-left: 0"><mo>=</mo><mi>μ</mi><mo>+</mo><msub><mi>u</mi><mrow><mn>1</mn><mi>k</mi></mrow></msub><mo>+</mo><msub><mi>ϵ</mi><mrow><mn>1</mn><mi>j</mi><mi>k</mi></mrow></msub><mo>,</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right; padding-right: 0"><msub><mi>θ</mi><mrow><mn>2</mn><mi>j</mi><mi>k</mi></mrow></msub></mtd><mtd columnalign="left" style="text-align: left; padding-left: 0"><mo>=</mo><mi>α</mi><mo>+</mo><mi>β</mi><mspace width="0.167em"></mspace><msub><mi>θ</mi><mrow><mn>1</mn><mi>j</mi><mi>k</mi></mrow></msub><mo>+</mo><msub><mi>u</mi><mrow><mn>2</mn><mi>k</mi></mrow></msub><mo>+</mo><msub><mi>ϵ</mi><mrow><mn>2</mn><mi>j</mi><mi>k</mi></mrow></msub><mo>,</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right; padding-right: 0"><mrow><mo stretchy="true" form="prefix">(</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>δ</mi><mrow><mn>1</mn><mi>j</mi><mi>k</mi></mrow></msub></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>δ</mi><mrow><mn>2</mn><mi>j</mi><mi>k</mi></mrow></msub></mtd></mtr></mtable><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="left" style="text-align: left; padding-left: 0"><mo>∼</mo><mi>N</mi><mspace width="-0.167em"></mspace><mrow><mo stretchy="true" form="prefix">(</mo><mrow><mo stretchy="true" form="prefix">(</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>θ</mi><mrow><mn>1</mn><mi>j</mi><mi>k</mi></mrow></msub></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>θ</mi><mrow><mn>2</mn><mi>j</mi><mi>k</mi></mrow></msub></mtd></mtr></mtable><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mrow><mo stretchy="true" form="prefix">(</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><msubsup><mi>σ</mi><mrow><mn>1</mn><mi>j</mi><mi>k</mi></mrow><mn>2</mn></msubsup></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>ρ</mi><mrow><mi>j</mi><mi>k</mi></mrow></msub><msub><mi>σ</mi><mrow><mn>1</mn><mi>j</mi><mi>k</mi></mrow></msub><msub><mi>σ</mi><mrow><mn>2</mn><mi>j</mi><mi>k</mi></mrow></msub></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>ρ</mi><mrow><mi>j</mi><mi>k</mi></mrow></msub><msub><mi>σ</mi><mrow><mn>1</mn><mi>j</mi><mi>k</mi></mrow></msub><msub><mi>σ</mi><mrow><mn>2</mn><mi>j</mi><mi>k</mi></mrow></msub></mtd><mtd columnalign="center" style="text-align: center"><msubsup><mi>σ</mi><mrow><mn>2</mn><mi>j</mi><mi>k</mi></mrow><mn>2</mn></msubsup></mtd></mtr></mtable><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd></mtr></mtable><annotation encoding="application/x-tex">
+<p>For pair <span class="math inline">j</span> in study <span class="math inline">k</span>,</p>
+<p><span class="math display">
 \begin{aligned}
 \theta_{1jk} &amp;= \mu + u_{1k} + \epsilon_{1jk}, \\
-\theta_{2jk} &amp;= \alpha + \beta\,\theta_{1jk} + u_{2k} + \epsilon_{2jk}, \\
+\theta_{2jk} &amp;= \alpha + \beta\,\theta_{1jk} + u_{2k} +
+\epsilon_{2jk}, \\
 \begin{pmatrix}\delta_{1jk} \\ \delta_{2jk}\end{pmatrix} &amp;\sim
 N\!\left(\begin{pmatrix}\theta_{1jk} \\ \theta_{2jk}\end{pmatrix},
-\begin{pmatrix}\sigma_{1jk}^2 &amp; \rho_{jk}\sigma_{1jk}\sigma_{2jk} \\
-\rho_{jk}\sigma_{1jk}\sigma_{2jk} &amp; \sigma_{2jk}^2\end{pmatrix}\right),
+\begin{pmatrix}\mathrm{se}_{1jk}^2 &amp;
+\rho_{jk}\,\mathrm{se}_{1jk}\,\mathrm{se}_{2jk} \\
+\rho_{jk}\,\mathrm{se}_{1jk}\,\mathrm{se}_{2jk} &amp;
+\mathrm{se}_{2jk}^2\end{pmatrix}\right),
 \end{aligned}
-</annotation></semantics></math></p>
-<p>with
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>u</mi><mrow><mn>1</mn><mi>k</mi></mrow></msub><mo>∼</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mi>s</mi><msubsup><mi>d</mi><mrow><mi>u</mi><mn>1</mn></mrow><mn>2</mn></msubsup><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">u_{1k} \sim N(0, sd_{u1}^2)</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>u</mi><mrow><mn>2</mn><mi>k</mi></mrow></msub><mo>∼</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mi>s</mi><msubsup><mi>d</mi><mrow><mi>u</mi><mn>2</mn></mrow><mn>2</mn></msubsup><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">u_{2k} \sim N(0, sd_{u2}^2)</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ϵ</mi><mrow><mn>1</mn><mi>j</mi><mi>k</mi></mrow></msub><mo>∼</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><msubsup><mi>τ</mi><mn>1</mn><mn>2</mn></msubsup><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\epsilon_{1jk} \sim N(0, \tau_1^2)</annotation></semantics></math>,
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ϵ</mi><mrow><mn>2</mn><mi>j</mi><mi>k</mi></mrow></msub><mo>∼</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><msubsup><mi>τ</mi><mn>2</mn><mn>2</mn></msubsup><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\epsilon_{2jk} \sim N(0, \tau_2^2)</annotation></semantics></math>.
-The same
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>β</mi><annotation encoding="application/x-tex">\beta</annotation></semantics></math>
-links true effects within and between studies.</p>
-<p>The study effects
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>u</mi><mrow><mn>1</mn><mi>k</mi></mrow></msub><annotation encoding="application/x-tex">u_{1k}</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>u</mi><mrow><mn>2</mn><mi>k</mi></mrow></msub><annotation encoding="application/x-tex">u_{2k}</annotation></semantics></math>
-capture clustering of the <em>true</em> effects within studies. The
-sampling errors of different pairs are assumed independent, even within
-a study. When a study reports several effect sizes from the same
-participants, their sampling errors are likely correlated as well, which
-the model does not account for.</p>
+</span></p>
+<p>with <span class="math inline">u_{1k} \sim N(0,
+\sigma_{S1}^2)</span>, <span class="math inline">u_{2k} \sim N(0,
+\sigma_{S2}^2)</span>, <span class="math inline">\epsilon_{1jk} \sim
+N(0, \sigma_{E1}^2)</span>, and <span class="math inline">\epsilon_{2jk}
+\sim N(0, \sigma_{E2}^2)</span>. These four SDs are reported as
+<code>study_sd1</code>, <code>study_sd2</code>, <code>es_sd1</code>, and
+<code>es_sd2</code>: S (study) is the between-study level and E (effect
+size) the level of effect-size pairs within studies. In the paper’s
+two-level model, <code>es_sd1</code> and <code>es_sd2</code> are <span class="math inline">\tau_1</span> and <span class="math inline">\tau_2</span>. The same <span class="math inline">\beta</span> links true effects within and between
+studies.</p>
+<p>The study effects <span class="math inline">u_{1k}</span> and <span class="math inline">u_{2k}</span> capture clustering of the
+<em>true</em> effects within studies. The sampling errors of different
+pairs are assumed independent, even within a study. When a study reports
+several effect sizes from the same participants, their sampling errors
+are likely correlated as well, which the model does not account for.</p>
 <p>Rather than sampling every latent effect, the Stan program integrates
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>θ</mi><annotation encoding="application/x-tex">\theta</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ϵ</mi><annotation encoding="application/x-tex">\epsilon</annotation></semantics></math>,
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>u</mi><annotation encoding="application/x-tex">u</annotation></semantics></math>
-out analytically. Each pair contributes a
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mo>×</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">2 \times 2</annotation></semantics></math>
-block and each study a rank-2 correction, handled with the Woodbury
-identity. The posterior is the same as that of the latent-variable
-program in the paper’s appendix, but Stan samples only the seven
-hyperparameters. That makes fits fast and avoids the funnel geometry
-that causes divergent transitions when sampling error is large relative
-to
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>τ</mi><mn>1</mn></msub><annotation encoding="application/x-tex">\tau_1</annotation></semantics></math>.</p>
+<span class="math inline">\theta</span>, <span class="math inline">\epsilon</span>, and <span class="math inline">u</span> out analytically. Each pair contributes a
+<span class="math inline">2 \times 2</span> block and each study a
+rank-2 correction, handled with the Woodbury identity. The posterior is
+the same as that of the latent-variable program in the paper’s appendix,
+but Stan samples only the seven hyperparameters. That makes fits fast
+and avoids the funnel geometry that causes divergent transitions when
+sampling error is large relative to <code>es_sd1</code>.</p>
 </div>
 <div class="section level2">
 <h2 id="reference">Reference<a class="anchor" aria-label="anchor" href="#reference"></a>

@@ -18,8 +18,8 @@ gh_prior(mu = c(0, 1), alpha = c(0, 1), beta = c(0, 1), sd_scale = 0.5)
 
 - sd_scale:
 
-  Scale of the half-Cauchy prior on `tau1`, `tau2`, `sd_u1`, and
-  `sd_u2`.
+  Scale of the half-Cauchy prior on all four SDs: `study_sd1`,
+  `study_sd2`, `es_sd1`, and `es_sd2`.
 
 ## Value
 
@@ -34,12 +34,12 @@ gh_prior()
 #>   mu    ~ normal(0, 1)
 #>   alpha ~ normal(0, 1)
 #>   beta  ~ normal(0, 1)
-#>   tau1, tau2, sd_u1, sd_u2 ~ half-Cauchy(0, 0.5)
+#>   study_sd1, study_sd2, es_sd1, es_sd2 ~ half-Cauchy(0, 0.5)
 # a prior centered on half of effects persisting
 gh_prior(beta = c(0.5, 0.25))
 #> Priors for gh_reg():
 #>   mu    ~ normal(0, 1)
 #>   alpha ~ normal(0, 1)
 #>   beta  ~ normal(0.5, 0.25)
-#>   tau1, tau2, sd_u1, sd_u2 ~ half-Cauchy(0, 0.5)
+#>   study_sd1, study_sd2, es_sd1, es_sd2 ~ half-Cauchy(0, 0.5)
 ```
