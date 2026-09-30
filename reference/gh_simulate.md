@@ -18,9 +18,9 @@ gh_simulate(
   mu = 0.5,
   alpha = 0,
   beta = 0.5,
-  es_sd1 = 0.25,
+  es_sd1 = 0,
   es_sd2 = 0,
-  study_sd1 = 0,
+  study_sd1 = 0.25,
   study_sd2 = 0
 )
 ```
@@ -100,11 +100,17 @@ every pair in study \\k\\, and pair-level deviations \\\epsilon\_{1jk}
 \\\sigma\_{E2}\\, and have the same names as in the output of
 [`gh_reg()`](https://joshgilbert1994.github.io/ghreg/reference/gh_reg.md).
 
-With `study_sd1 = study_sd2 = 0` (the default) there is no study-level
-variation: pairs from the same study are independent, so the data follow
-the two-level model and the study grouping has no effect. Set
-`study_sd1` or `study_sd2` above 0, with `pairs_per_study` above 1, to
-simulate data for the three-level model.
+By default each study contributes one pair, so the data follow the
+two-level model, and the heterogeneity is set at the study level
+(`study_sd1 = 0.25`, `es_sd1 = 0`). That matches
+[`gh_reg()`](https://joshgilbert1994.github.io/ghreg/reference/gh_reg.md),
+which reports a two-level model's SDs as `study_sd1` and `study_sd2`:
+with one pair per study, only the total SD at each time is identified,
+so a two-level fit estimates \\\sqrt{\sigma\_{S1}^2 + \sigma\_{E1}^2}\\
+whichever level you put the variation in. To simulate data for the
+three-level model, give studies several pairs (`pairs_per_study` above
+
+1.  and set the pair-level SDs `es_sd1` or `es_sd2` above 0.
 
 Each pair is simulated as its own trial, so sampling errors are
 independent across pairs, including pairs from the same study. In real

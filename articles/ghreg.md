@@ -135,7 +135,7 @@ interval covers the true value of 0.4. The other parameters are
 - `study_sd2`: between-study *residual* SD of the true follow-up
   effects, given the true endline effects;
 - `es_sd1`, `es_sd2`: the same two SDs across effect-size pairs within a
-  study.
+  study (three-level model only).
 
 The SDs ending in 2 are residual SDs: they measure how much the true
 follow-up effects vary beyond what the true endline effects predict, so
@@ -145,7 +145,10 @@ whenever `beta` is not 0).
 Because the data have several pairs per study,
 [`gh_reg()`](https://joshgilbert1994.github.io/ghreg/reference/gh_reg.md)
 fit the three-level model. With `study = NULL`, or one pair per study,
-it fits the two-level model in the paper.
+it fits the two-level model in the paper, which treats each pair as its
+own study. Only the total variance across pairs is identified there, so
+a two-level fit reports it as `study_sd1` and `study_sd2`, with no
+`es_sd1` or `es_sd2`.
 
 ### Summaries as tibbles
 
@@ -287,11 +290,11 @@ coef(gh_reg(d, es1, se1, es2, se2, rho = 0.8, seed = 1))["beta"]
 #> 0.3690296
 ```
 
-By default the simulated studies have no study-level variation
-(`study_sd1 = study_sd2 = 0`), so pairs from the same study are
-independent and the data follow the two-level model. To simulate
-three-level data, give studies several pairs and set the study-level SDs
-above zero:
+By default each simulated study contributes one pair, so the data follow
+the two-level model, with the heterogeneity at the study level
+(`study_sd1 = 0.25`), as a two-level fit reports it. To simulate
+three-level data, give studies several pairs and set the pair-level SDs
+`es_sd1` and `es_sd2` as well:
 
 ``` r
 
@@ -331,9 +334,9 @@ with u\_{1k} \sim N(0, \sigma\_{S1}^2), u\_{2k} \sim N(0,
 \epsilon\_{2jk} \sim N(0, \sigma\_{E2}^2). These four SDs are reported
 as `study_sd1`, `study_sd2`, `es_sd1`, and `es_sd2`: S (study) is the
 between-study level and E (effect size) the level of effect-size pairs
-within studies. In the paper’s two-level model, `es_sd1` and `es_sd2`
-are \tau_1 and \tau_2. The same \beta links true effects within and
-between studies.
+within studies. The two-level model has only one level of heterogeneity,
+reported as `study_sd1` and `study_sd2`: the paper’s \tau_1 and \tau_2.
+The same \beta links true effects within and between studies.
 
 The study effects u\_{1k} and u\_{2k} capture clustering of the *true*
 effects within studies. The sampling errors of different pairs are
@@ -348,7 +351,7 @@ Woodbury identity. The posterior is the same as that of the
 latent-variable program in the paper’s appendix, but Stan samples only
 the seven hyperparameters. That makes fits fast and avoids the funnel
 geometry that causes divergent transitions when sampling error is large
-relative to `es_sd1`.
+relative to the heterogeneity.
 
 ## Reference
 

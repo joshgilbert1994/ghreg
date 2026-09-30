@@ -1,5 +1,23 @@
 # Changelog
 
+## ghreg 0.2.1
+
+- In the two-level model (`study = NULL`, or one pair per study), the
+  SDs are now reported as the between-study SDs `study_sd1` and
+  `study_sd2`, as in a standard random-effects meta-analysis (the
+  paper’s tau_1 and tau_2), instead of `es_sd1` and `es_sd2`. The
+  estimates are unchanged; `es_sd1` and `es_sd2` now appear only in the
+  three-level model.
+- [`gh_simulate()`](https://joshgilbert1994.github.io/ghreg/reference/gh_simulate.md)
+  now puts its default heterogeneity at the study level
+  (`study_sd1 = 0.25`, `es_sd1 = 0`), matching how a two-level fit
+  reports it. With the default one pair per study, the simulated data
+  are identical to before.
+- The model-fitting examples now run on the website and with
+  [`example()`](https://rdrr.io/r/utils/example.html), but not in
+  `R CMD check`, so they use the default settings and the website no
+  longer shows `\donttest` markers.
+
 ## ghreg 0.2.0
 
 - The variance components have clearer names, in the output of

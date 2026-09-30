@@ -17,7 +17,7 @@ correlated by (approximately) rho."><meta property="og:image" content="https://j
 
     <a class="navbar-brand me-2" href="../index.html">ghreg</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -62,9 +62,9 @@ correlated by (approximately) <code>rho</code>.</p>
 <span>  mu <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>  alpha <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  beta <span class="op">=</span> <span class="fl">0.5</span>,</span>
-<span>  es_sd1 <span class="op">=</span> <span class="fl">0.25</span>,</span>
+<span>  es_sd1 <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  es_sd2 <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  study_sd1 <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  study_sd1 <span class="op">=</span> <span class="fl">0.25</span>,</span>
 <span>  study_sd2 <span class="op">=</span> <span class="fl">0</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -146,12 +146,14 @@ The arguments <code>study_sd1</code>, <code>study_sd2</code>, <code>es_sd1</code
 \(\sigma_{S1}\), \(\sigma_{S2}\),
 \(\sigma_{E1}\), and \(\sigma_{E2}\), and have the
 same names as in the output of <code><a href="gh_reg.html">gh_reg()</a></code>.</p>
-<p>With <code>study_sd1 = study_sd2 = 0</code> (the default) there is no study-level
-variation: pairs from the same study are independent, so the data follow the
-two-level model and the study grouping has no effect. Set <code>study_sd1</code> or
-<code>study_sd2</code> above 0, with <code>pairs_per_study</code> above 1, to simulate data for the
-three-level model.</p>
-<p>Each pair is simulated as its own trial, so sampling errors are independent
+<p>By default each study contributes one pair, so the data follow the
+two-level model, and the heterogeneity is set at the study level
+(<code>study_sd1 = 0.25</code>, <code>es_sd1 = 0</code>). That matches <code><a href="gh_reg.html">gh_reg()</a></code>, which reports a
+two-level model's SDs as <code>study_sd1</code> and <code>study_sd2</code>: with one pair per
+study, only the total SD at each time is identified, so a two-level fit
+estimates \(\sqrt{\sigma_{S1}^2 + \sigma_{E1}^2}\) whichever level you put the variation in. To simulate data for
+the three-level model, give studies several pairs (<code>pairs_per_study</code> above</p><ol><li><p>and set the pair-level SDs <code>es_sd1</code> or <code>es_sd2</code> above 0.</p></li>
+</ol><p>Each pair is simulated as its own trial, so sampling errors are independent
 across pairs, including pairs from the same study. In real meta-analyses,
 several effect sizes from one study often share participants, so their
 sampling errors are correlated; neither <code>gh_simulate()</code> nor <code><a href="gh_reg.html">gh_reg()</a></code>

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ghreg</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,6 +32,13 @@
       <small>Source: <a href="https://github.com/joshgilbert1994/ghreg/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.1" id="ghreg-021">ghreg 0.2.1<a class="anchor" aria-label="anchor" href="#ghreg-021"></a></h2>
+<ul><li>In the two-level model (<code>study = NULL</code>, or one pair per study), the SDs are now reported as the between-study SDs <code>study_sd1</code> and <code>study_sd2</code>, as in a standard random-effects meta-analysis (the paper’s tau_1 and tau_2), instead of <code>es_sd1</code> and <code>es_sd2</code>. The estimates are unchanged; <code>es_sd1</code> and <code>es_sd2</code> now appear only in the three-level model.</li>
+<li>
+<code><a href="../reference/gh_simulate.html">gh_simulate()</a></code> now puts its default heterogeneity at the study level (<code>study_sd1 = 0.25</code>, <code>es_sd1 = 0</code>), matching how a two-level fit reports it. With the default one pair per study, the simulated data are identical to before.</li>
+<li>The model-fitting examples now run on the website and with <code><a href="https://rdrr.io/r/utils/example.html" class="external-link">example()</a></code>, but not in <code>R CMD check</code>, so they use the default settings and the website no longer shows <code>\donttest</code> markers.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.0" id="ghreg-020">ghreg 0.2.0<a class="anchor" aria-label="anchor" href="#ghreg-020"></a></h2>
 <ul><li>The variance components have clearer names, in the output of <code><a href="../reference/gh_reg.html">gh_reg()</a></code> and <code><a href="../reference/gh_sensitivity.html">gh_sensitivity()</a></code>, in <code>gh_sensitivity(parameters = )</code>, and as arguments of <code><a href="../reference/gh_simulate.html">gh_simulate()</a></code>: <code>sd_u1</code> and <code>sd_u2</code> are now <code>study_sd1</code> and <code>study_sd2</code>, and <code>tau1</code> and <code>tau2</code> are now <code>es_sd1</code> and <code>es_sd2</code>. The estimates are unchanged. The documentation now says explicitly that the SDs ending in 2 are residual SDs of the true follow-up effects given the true endline effects.</li>

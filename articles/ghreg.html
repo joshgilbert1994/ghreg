@@ -21,7 +21,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ghreg</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -191,7 +191,7 @@ effects;</li>
 true follow-up effects, given the true endline effects;</li>
 <li>
 <code>es_sd1</code>, <code>es_sd2</code>: the same two SDs across
-effect-size pairs within a study.</li>
+effect-size pairs within a study (three-level model only).</li>
 </ul>
 <p>The SDs ending in 2 are residual SDs: they measure how much the true
 follow-up effects vary beyond what the true endline effects predict, so
@@ -199,7 +199,11 @@ the total SD of the true follow-up effects is at least as large (larger
 whenever <code>beta</code> is not 0).</p>
 <p>Because the data have several pairs per study, <code><a href="../reference/gh_reg.html">gh_reg()</a></code>
 fit the three-level model. With <code>study = NULL</code>, or one pair
-per study, it fits the two-level model in the paper.</p>
+per study, it fits the two-level model in the paper, which treats each
+pair as its own study. Only the total variance across pairs is
+identified there, so a two-level fit reports it as
+<code>study_sd1</code> and <code>study_sd2</code>, with no
+<code>es_sd1</code> or <code>es_sd2</code>.</p>
 <div class="section level3">
 <h3 id="summaries-as-tibbles">Summaries as tibbles<a class="anchor" aria-label="anchor" href="#summaries-as-tibbles"></a>
 </h3>
@@ -321,11 +325,11 @@ method under designs that resemble your own:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="fu"><a href="../reference/gh_reg.html">gh_reg</a></span><span class="op">(</span><span class="va">d</span>, <span class="va">es1</span>, <span class="va">se1</span>, <span class="va">es2</span>, <span class="va">se2</span>, rho <span class="op">=</span> <span class="fl">0.8</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="st">"beta"</span><span class="op">]</span></span>
 <span><span class="co">#&gt;      beta </span></span>
 <span><span class="co">#&gt; 0.3690296</span></span></code></pre></div>
-<p>By default the simulated studies have no study-level variation
-(<code>study_sd1 = study_sd2 = 0</code>), so pairs from the same study
-are independent and the data follow the two-level model. To simulate
-three-level data, give studies several pairs and set the study-level SDs
-above zero:</p>
+<p>By default each simulated study contributes one pair, so the data
+follow the two-level model, with the heterogeneity at the study level
+(<code>study_sd1 = 0.25</code>), as a two-level fit reports it. To
+simulate three-level data, give studies several pairs and set the
+pair-level SDs <code>es_sd1</code> and <code>es_sd2</code> as well:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span></span>
 <span><span class="va">d3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gh_simulate.html">gh_simulate</a></span><span class="op">(</span>n_studies <span class="op">=</span> <span class="fl">80</span>, pairs_per_study <span class="op">=</span> <span class="fl">3</span>, n <span class="op">=</span> <span class="fl">150</span>, rho <span class="op">=</span> <span class="fl">0.7</span>,</span>
@@ -368,8 +372,9 @@ N(0, \sigma_{E1}^2)</span>, and <span class="math inline">\epsilon_{2jk}
 \sim N(0, \sigma_{E2}^2)</span>. These four SDs are reported as
 <code>study_sd1</code>, <code>study_sd2</code>, <code>es_sd1</code>, and
 <code>es_sd2</code>: S (study) is the between-study level and E (effect
-size) the level of effect-size pairs within studies. In the paper’s
-two-level model, <code>es_sd1</code> and <code>es_sd2</code> are <span class="math inline">\tau_1</span> and <span class="math inline">\tau_2</span>. The same <span class="math inline">\beta</span> links true effects within and between
+size) the level of effect-size pairs within studies. The two-level model
+has only one level of heterogeneity, reported as <code>study_sd1</code>
+and <code>study_sd2</code>: the paper’s <span class="math inline">\tau_1</span> and <span class="math inline">\tau_2</span>. The same <span class="math inline">\beta</span> links true effects within and between
 studies.</p>
 <p>The study effects <span class="math inline">u_{1k}</span> and <span class="math inline">u_{2k}</span> capture clustering of the
 <em>true</em> effects within studies. The sampling errors of different
@@ -383,7 +388,7 @@ rank-2 correction, handled with the Woodbury identity. The posterior is
 the same as that of the latent-variable program in the paper’s appendix,
 but Stan samples only the seven hyperparameters. That makes fits fast
 and avoids the funnel geometry that causes divergent transitions when
-sampling error is large relative to <code>es_sd1</code>.</p>
+sampling error is large relative to the heterogeneity.</p>
 </div>
 <div class="section level2">
 <h2 id="reference">Reference<a class="anchor" aria-label="anchor" href="#reference"></a>

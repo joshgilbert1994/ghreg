@@ -11,7 +11,7 @@ outcome across time is unknown. The Stan model is compiled once and reused."><me
 
     <a class="navbar-brand me-2" href="../index.html">ghreg</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -68,9 +68,9 @@ to every pair of effect sizes.</p></dd>
 
 <dt id="arg-parameters">parameters<a class="anchor" aria-label="anchor" href="#arg-parameters"></a></dt>
 <dd><p>Parameters to report: any of <code>"beta"</code>, <code>"alpha"</code>, <code>"mu"</code>,
-<code>"es_sd1"</code>, <code>"es_sd2"</code>, and, for the three-level model, <code>"study_sd1"</code> and
-<code>"study_sd2"</code>. Every fit estimates all parameters; this only chooses which
-rows are kept. Unknown names are an error.</p></dd>
+<code>"study_sd1"</code>, <code>"study_sd2"</code>, and, for the three-level model, <code>"es_sd1"</code>
+and <code>"es_sd2"</code>. Every fit estimates all parameters; this only chooses
+which rows are kept. Unknown names are an error.</p></dd>
 
 
 <dt id="arg-ci-level">ci.level<a class="anchor" aria-label="anchor" href="#arg-ci-level"></a></dt>
@@ -87,22 +87,19 @@ divergent transitions. Plot it with <code><a href="plot.gh_sensitivity.html">plo
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
-<span class="r-in"><span><span class="va">sens</span> <span class="op">&lt;-</span> <span class="fu">gh_sensitivity</span><span class="op">(</span><span class="va">persist_sim</span>, <span class="va">es1</span>, <span class="va">se1</span>, <span class="va">es2</span>, <span class="va">se2</span>, study <span class="op">=</span> <span class="va">study</span>,</span></span>
-<span class="r-in"><span>                       rho <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.9</span>, by <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span>, chains <span class="op">=</span> <span class="fl">2</span>,</span></span>
-<span class="r-in"><span>                       iter_sampling <span class="op">=</span> <span class="fl">2000</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">sens</span> <span class="op">&lt;-</span> <span class="fu">gh_sensitivity</span><span class="op">(</span><span class="va">persist_sim</span>, <span class="va">es1</span>, <span class="va">se1</span>, <span class="va">es2</span>, <span class="va">se2</span>, study <span class="op">=</span> <span class="va">study</span>,</span></span>
+<span class="r-in"><span>                       rho <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.9</span>, by <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">sens</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 4 × 10</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     rho term  estimate std.error ci.lower ci.upper  rhat ess_bulk ess_tail</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>   0   beta     0.678    0.082<span style="text-decoration: underline;">1</span>  0.528      0.850 1.00     <span style="text-decoration: underline;">1</span>874.    <span style="text-decoration: underline;">1</span>840.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>   0.3 beta     0.611    0.084<span style="text-decoration: underline;">5</span>  0.449      0.787 1.00     <span style="text-decoration: underline;">1</span>546.    <span style="text-decoration: underline;">1</span>747.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span>   0.6 beta     0.457    0.091<span style="text-decoration: underline;">0</span>  0.273      0.628 1.00     <span style="text-decoration: underline;">1</span>399.    <span style="text-decoration: underline;">1</span>852.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span>   0.9 beta     0.208    0.096<span style="text-decoration: underline;">1</span>  0.009<span style="text-decoration: underline;">24</span>    0.387 1.000    <span style="text-decoration: underline;">1</span>597.    <span style="text-decoration: underline;">2</span>003.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>   0   beta     0.677    0.085<span style="text-decoration: underline;">9</span>  0.519      0.861  1.00    <span style="text-decoration: underline;">1</span>893.    <span style="text-decoration: underline;">2</span>147.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>   0.3 beta     0.612    0.082<span style="text-decoration: underline;">8</span>  0.446      0.778  1.00    <span style="text-decoration: underline;">1</span>778.    <span style="text-decoration: underline;">2</span>134.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span>   0.6 beta     0.454    0.091<span style="text-decoration: underline;">4</span>  0.273      0.625  1.00    <span style="text-decoration: underline;">1</span>392.    <span style="text-decoration: underline;">2</span>426.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span>   0.9 beta     0.207    0.100  -<span style="color: #BB0000;">0.002</span><span style="color: #BB0000; text-decoration: underline;">59</span>    0.394  1.00    <span style="text-decoration: underline;">1</span>363.    <span style="text-decoration: underline;">1</span>557.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 1 more variable: divergences &lt;int&gt;</span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sens</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="gh_sensitivity-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

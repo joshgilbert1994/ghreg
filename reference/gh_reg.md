@@ -110,7 +110,8 @@ An object of class `gh_reg` with elements
 
 - `fit`:
 
-  the `CmdStanMCMC` or `stanfit` object
+  the `CmdStanMCMC` or `stanfit` object, which keeps the Stan program's
+  names (`es_sd1` and `es_sd2` in the two-level model)
 
 - `levels`:
 
@@ -144,21 +145,23 @@ The parameters are
 
 - `study_sd1`:
 
-  between-study SD of the true endline effects (three-level model only)
+  between-study SD of the true endline effects
 
 - `study_sd2`:
 
   between-study residual SD of the true follow-up effects, given the
-  true endline effects (three-level model only)
+  true endline effects
 
 - `es_sd1`:
 
   SD of the true endline effects across effect-size pairs within a study
+  (three-level model only)
 
 - `es_sd2`:
 
   residual SD of the true follow-up effects across effect-size pairs
-  within a study, given the true endline effects
+  within a study, given the true endline effects (three-level model
+  only)
 
 ## Details
 
@@ -189,10 +192,13 @@ The "1" SDs describe the true endline effects. The "2" SDs are
 on the true endline effects, so the total SD of the true follow-up
 effects is at least as large (larger whenever `beta` is not 0).
 
-With `study = NULL`, or when every study contributes one pair, the study
-level is dropped, since only the sum of the study- and pair-level
-variances would be identified, and the model is the two-level model in
-the paper. Its \\\tau_1\\ and \\\tau_2\\ are `es_sd1` and `es_sd2`.
+With `study = NULL`, or when every study contributes one pair, the model
+has a single level of heterogeneity: the two-level model in the paper,
+which treats each pair as its own study. Only the total variance across
+pairs is identified, so the output reports it as the between-study SDs
+`study_sd1` and `study_sd2` (the paper's \\\tau_1\\ and \\\tau_2\\), and
+there are no `es_sd1` or `es_sd2`. If studies do contribute several
+pairs, pass `study` to fit the three-level model.
 
 The study effects \\u\_{1k}\\ and \\u\_{2k}\\ capture clustering of the
 *true* effects within studies. The sampling errors of different pairs
@@ -204,7 +210,8 @@ The latent \\\theta\\, \\\epsilon\\, and \\u\\ are integrated out
 analytically, so Stan samples only the hyperparameters. The posterior is
 the same as that of the latent-variable program in the paper's appendix,
 but sampling is faster and free of the funnel geometry that causes
-divergent transitions when sampling error is large relative to `es_sd1`.
+divergent transitions when sampling error is large relative to the
+heterogeneity.
 
 ## The sampling correlation `rho`
 
@@ -234,50 +241,45 @@ to vary `rho`,
 ## Examples
 
 ``` r
-# \donttest{
-# 2 chains of 2000 draws give the default 4000 draws within CRAN's limit
-# of 2 cores; the default is 4 chains of 1000 run in parallel
 fit <- gh_reg(persist_sim, es1, se1, es2, se2, study = study, rho = 0.6,
-              chains = 2, iter_sampling = 2000)
+              seed = 1)
 fit
 #> Gilbert-Himmelsbach persistence meta-regression
 #> 3-level model: 174 pairs of effect sizes in 60 studies
 #> Sampling correlation (rho): 0.6
-#> Backend: rstan, 2 chains x 2000 draws; 0 divergent transitions
+#> Backend: rstan, 4 chains x 1000 draws; 0 divergent transitions
 #> 
 #> # A tibble: 7 × 8
 #>   term      estimate std.error ci.lower ci.upper  rhat ess_bulk ess_tail
 #>   <chr>        <dbl>     <dbl>    <dbl>    <dbl> <dbl>    <dbl>    <dbl>
-#> 1 beta        0.456     0.0942  0.268     0.638   1.00    1578.    1940.
-#> 2 alpha      -0.0394    0.0448 -0.125     0.0500  1.00    1638.    1912.
-#> 3 mu          0.444     0.0263  0.391     0.495   1.00    3157.    2271.
-#> 4 study_sd1   0.130     0.0291  0.0712    0.188   1.00    1788.    1020.
-#> 5 study_sd2   0.0600    0.0202  0.0169    0.0981  1.00    1586.     828.
-#> 6 es_sd1      0.161     0.0257  0.111     0.212   1.00    1794.    1697.
-#> 7 es_sd2      0.0371    0.0233  0.00133   0.0858  1.00    1441.     875.
+#> 1 beta        0.454     0.0914  0.273     0.625   1.00    1392.    2426.
+#> 2 alpha      -0.0381    0.0437 -0.123     0.0474  1.00    1415.    2444.
+#> 3 mu          0.444     0.0265  0.392     0.497   1.00    3265.    2605.
+#> 4 study_sd1   0.131     0.0280  0.0734    0.186   1.00    2759.    1748.
+#> 5 study_sd2   0.0587    0.0210  0.0125    0.0963  1.00    1314.     782.
+#> 6 es_sd1      0.161     0.0253  0.112     0.210   1.00    2403.    2031.
+#> 7 es_sd2      0.0373    0.0232  0.00208   0.0849  1.00    1303.    1194.
 coef(fit)
 #>        beta       alpha          mu   study_sd1   study_sd2      es_sd1 
-#>  0.45636082 -0.03936947  0.44376653  0.12970949  0.06001773  0.16071725 
+#>  0.45357769 -0.03807829  0.44407135  0.13054858  0.05866494  0.16103195 
 #>      es_sd2 
-#>  0.03708056 
+#>  0.03734233 
 
 # study-specific sampling correlations
-gh_reg(persist_sim, es1, se1, es2, se2, study = study, rho = rho,
-       chains = 2, iter_sampling = 2000)
+gh_reg(persist_sim, es1, se1, es2, se2, study = study, rho = rho, seed = 1)
 #> Gilbert-Himmelsbach persistence meta-regression
 #> 3-level model: 174 pairs of effect sizes in 60 studies
 #> Sampling correlation (rho): varies, 0.23 to 0.94 (mean 0.67)
-#> Backend: rstan, 2 chains x 2000 draws; 0 divergent transitions
+#> Backend: rstan, 4 chains x 1000 draws; 0 divergent transitions
 #> 
 #> # A tibble: 7 × 8
 #>   term      estimate std.error ci.lower ci.upper  rhat ess_bulk ess_tail
 #>   <chr>        <dbl>     <dbl>    <dbl>    <dbl> <dbl>    <dbl>    <dbl>
-#> 1 beta        0.331     0.0921  0.142      0.507 1.00     1582.    1847.
-#> 2 alpha       0.0148    0.0438 -0.0704     0.103 1.00     1589.    1840.
-#> 3 mu          0.443     0.0265  0.392      0.494 1.00     2817.    2331.
-#> 4 study_sd1   0.139     0.0276  0.0850     0.194 1.000    2788.    1950.
-#> 5 study_sd2   0.0613    0.0216  0.0134     0.101 1.00     1812.     826.
-#> 6 es_sd1      0.161     0.0251  0.114      0.212 1.00     2189.    2204.
-#> 7 es_sd2      0.0601    0.0239  0.00997    0.103 1.00     2076.    1214.
-# }
+#> 1 beta        0.337     0.0911  0.161     0.517  1.00     1583.    2097.
+#> 2 alpha       0.0124    0.0431 -0.0711    0.0947 1.000    1599.    1996.
+#> 3 mu          0.443     0.0269  0.389     0.497  1.00     3379.    2515.
+#> 4 study_sd1   0.139     0.0275  0.0835    0.193  1.00     2560.    1763.
+#> 5 study_sd2   0.0618    0.0212  0.0141    0.100  1.00     2046.     884.
+#> 6 es_sd1      0.162     0.0242  0.117     0.212  1.00     2354.    2240.
+#> 7 es_sd2      0.0592    0.0238  0.00818   0.102  1.00     1487.     809.
 ```
