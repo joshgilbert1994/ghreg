@@ -8,22 +8,19 @@
 #' @param rho Values of the sampling correlation to try. Each value is applied
 #'   to every pair of effect sizes.
 #' @param parameters Parameters to report: any of `"beta"`, `"alpha"`, `"mu"`,
-#'   `"es_sd1"`, `"es_sd2"`, and, for the three-level model, `"study_sd1"` and
-#'   `"study_sd2"`. Every fit estimates all parameters; this only chooses which
-#'   rows are kept. Unknown names are an error.
+#'   `"study_sd1"`, `"study_sd2"`, and, for the three-level model, `"es_sd1"`
+#'   and `"es_sd2"`. Every fit estimates all parameters; this only chooses
+#'   which rows are kept. Unknown names are an error.
 #' @param ci.level Probability mass of the credible intervals.
 #' @return A tibble of class `gh_sensitivity`, with one row per value of `rho`
 #'   and parameter. The columns are `rho`, the columns of
 #'   `summary(fit)` (see [summary.gh_reg()]), and the number of
 #'   divergent transitions. Plot it with [plot.gh_sensitivity()].
-#' @examples
-#' \donttest{
+#' @examplesIf interactive() || identical(Sys.getenv("IN_PKGDOWN"), "true")
 #' sens <- gh_sensitivity(persist_sim, es1, se1, es2, se2, study = study,
-#'                        rho = seq(0, 0.9, by = 0.3), chains = 2,
-#'                        iter_sampling = 2000)
+#'                        rho = seq(0, 0.9, by = 0.3), seed = 1)
 #' sens
 #' plot(sens)
-#' }
 #' @export
 gh_sensitivity <- function(..., rho = seq(0, 0.9, by = 0.1), parameters = "beta",
                            ci.level = 0.95) {
@@ -34,7 +31,7 @@ gh_sensitivity <- function(..., rho = seq(0, 0.9, by = 0.1), parameters = "beta"
   .check_names(parameters, .gh_parameters, "Unknown `parameters`")
   out <- lapply(rho, function(rr) {
     f <- gh_reg(..., rho = !!rr)
-    # study_sd1 and study_sd2 exist only in the three-level model
+    # es_sd1 and es_sd2 exist only in the three-level model
     .check_names(parameters, f$summary$term,
                  sprintf("Not in this %d-level model", f$levels))
     s <- .summarise(f$draws, ci.level = ci.level)
@@ -60,14 +57,11 @@ gh_sensitivity <- function(..., rho = seq(0, 0.9, by = 0.1), parameters = "beta"
 #' @param xlab,ylab,title Axis labels and title.
 #' @param ... Unused.
 #' @return A ggplot object, which you can modify further with `+`.
-#' @examples
-#' \donttest{
+#' @examplesIf interactive() || identical(Sys.getenv("IN_PKGDOWN"), "true")
 #' sens <- gh_sensitivity(persist_sim, es1, se1, es2, se2, study = study,
-#'                        rho = seq(0, 0.9, by = 0.3), chains = 2,
-#'                        iter_sampling = 2000)
+#'                        rho = seq(0, 0.9, by = 0.3), seed = 1)
 #' plot(sens, ref = c(Naive = 0.535))
 #' plot(sens) + ggplot2::theme_minimal()
-#' }
 #' @export
 plot.gh_sensitivity <- function(x, parameter = "beta", ref = NULL,
                                 xlab = expression("Sampling correlation " * rho),

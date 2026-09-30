@@ -43,6 +43,14 @@ test_that("study_sd1 and study_sd2 add study-level clustering", {
   # with es_sd2 = 0, the residual is constant within study and has SD study_sd2
   expect_true(all(tapply(r2, d$study, function(x) diff(range(x))) < 1e-12))
   expect_equal(sd(tapply(r2, d$study, mean)), 0.2, tolerance = 0.1)
-  d0 <- gh_simulate(n_studies = 50, pairs_per_study = 2, es_sd1 = 0, es_sd2 = 0)
+  d0 <- gh_simulate(n_studies = 50, pairs_per_study = 2, study_sd1 = 0)
   expect_true(all(d0$theta1 == 0.5))
+})
+
+test_that("the default heterogeneity is at the study level", {
+  set.seed(6)
+  d <- gh_simulate(n_studies = 20, pairs_per_study = 3)
+  # es_sd1 = 0 by default, so true effects are constant within study
+  expect_true(all(tapply(d$theta1, d$study, function(x) diff(range(x))) < 1e-12))
+  expect_gt(sd(d$theta1), 0)
 })

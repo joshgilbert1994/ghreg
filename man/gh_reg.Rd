@@ -63,7 +63,8 @@ An object of class \code{gh_reg} with elements
 columns \code{term}, \code{estimate}, \code{std.error}, \code{ci.lower}, \code{ci.upper},
 \code{rhat}, \code{ess_bulk}, and \code{ess_tail}; see \code{\link[=summary.gh_reg]{summary.gh_reg()}}}
 \item{\code{draws}}{posterior draws, a \code{posterior::draws_array}}
-\item{\code{fit}}{the \code{CmdStanMCMC} or \code{stanfit} object}
+\item{\code{fit}}{the \code{CmdStanMCMC} or \code{stanfit} object, which keeps the
+Stan program's names (\code{es_sd1} and \code{es_sd2} in the two-level model)}
 \item{\code{levels}}{2 or 3}
 \item{\code{n_pairs}, \code{n_studies}}{sample sizes}
 \item{\code{rho}}{the sampling correlations used, one per pair}
@@ -74,14 +75,14 @@ The parameters are
 \item{\code{alpha}}{mean true follow-up effect when the true endline effect
 is 0}
 \item{\code{mu}}{mean true endline effect}
-\item{\code{study_sd1}}{between-study SD of the true endline effects
-(three-level model only)}
+\item{\code{study_sd1}}{between-study SD of the true endline effects}
 \item{\code{study_sd2}}{between-study residual SD of the true follow-up
-effects, given the true endline effects (three-level model only)}
+effects, given the true endline effects}
 \item{\code{es_sd1}}{SD of the true endline effects across effect-size pairs
-within a study}
+within a study (three-level model only)}
 \item{\code{es_sd2}}{residual SD of the true follow-up effects across
-effect-size pairs within a study, given the true endline effects}}
+effect-size pairs within a study, given the true endline effects
+(three-level model only)}}
 }
 \description{
 Fits the Gilbert and Himmelsbach (2026) meta-regression of follow-up effect
@@ -121,10 +122,13 @@ true follow-up effects after conditioning on the true endline effects, so
 the total SD of the true follow-up effects is at least as large (larger
 whenever \code{beta} is not 0).
 
-With \code{study = NULL}, or when every study contributes one pair, the study
-level is dropped, since only the sum of the study- and pair-level variances
-would be identified, and the model is the two-level model in the paper. Its
-\eqn{\tau_1}{tau_1} and \eqn{\tau_2}{tau_2} are \code{es_sd1} and \code{es_sd2}.
+With \code{study = NULL}, or when every study contributes one pair, the model
+has a single level of heterogeneity: the two-level model in the paper,
+which treats each pair as its own study. Only the total variance across
+pairs is identified, so the output reports it as the between-study SDs
+\code{study_sd1} and \code{study_sd2} (the paper's \eqn{\tau_1}{tau_1} and
+\eqn{\tau_2}{tau_2}), and there are no \code{es_sd1} or \code{es_sd2}. If studies do
+contribute several pairs, pass \code{study} to fit the three-level model.
 
 The study effects \eqn{u_{1k}} and \eqn{u_{2k}} capture clustering of the
 \emph{true} effects within studies. The sampling errors of different pairs are
@@ -136,7 +140,7 @@ The latent \eqn{\theta}, \eqn{\epsilon}, and \eqn{u} are integrated out
 analytically, so Stan samples only the hyperparameters. The posterior is the
 same as that of the latent-variable program in the paper's appendix, but
 sampling is faster and free of the funnel geometry that causes divergent
-transitions when sampling error is large relative to \code{es_sd1}.
+transitions when sampling error is large relative to the heterogeneity.
 }
 
 \section{The sampling correlation \code{rho}}{
@@ -150,18 +154,15 @@ study-specific values.
 }
 
 \examples{
-\donttest{
-# 2 chains of 2000 draws give the default 4000 draws within CRAN's limit
-# of 2 cores; the default is 4 chains of 1000 run in parallel
+\dontshow{if (interactive() || identical(Sys.getenv("IN_PKGDOWN"), "true")) withAutoprint(\{ # examplesIf}
 fit <- gh_reg(persist_sim, es1, se1, es2, se2, study = study, rho = 0.6,
-              chains = 2, iter_sampling = 2000)
+              seed = 1)
 fit
 coef(fit)
 
 # study-specific sampling correlations
-gh_reg(persist_sim, es1, se1, es2, se2, study = study, rho = rho,
-       chains = 2, iter_sampling = 2000)
-}
+gh_reg(persist_sim, es1, se1, es2, se2, study = study, rho = rho, seed = 1)
+\dontshow{\}) # examplesIf}
 }
 \references{
 Gilbert, J. B., & Himmelsbach, Z. (2026). \emph{Why fadeout is

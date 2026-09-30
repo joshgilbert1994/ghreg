@@ -18,9 +18,9 @@ gh_sensitivity(
 to every pair of effect sizes.}
 
 \item{parameters}{Parameters to report: any of \code{"beta"}, \code{"alpha"}, \code{"mu"},
-\code{"es_sd1"}, \code{"es_sd2"}, and, for the three-level model, \code{"study_sd1"} and
-\code{"study_sd2"}. Every fit estimates all parameters; this only chooses which
-rows are kept. Unknown names are an error.}
+\code{"study_sd1"}, \code{"study_sd2"}, and, for the three-level model, \code{"es_sd1"}
+and \code{"es_sd2"}. Every fit estimates all parameters; this only chooses
+which rows are kept. Unknown names are an error.}
 
 \item{ci.level}{Probability mass of the credible intervals.}
 }
@@ -36,11 +36,10 @@ recommended by Gilbert and Himmelsbach (2026) when the correlation of the
 outcome across time is unknown. The Stan model is compiled once and reused.
 }
 \examples{
-\donttest{
+\dontshow{if (interactive() || identical(Sys.getenv("IN_PKGDOWN"), "true")) withAutoprint(\{ # examplesIf}
 sens <- gh_sensitivity(persist_sim, es1, se1, es2, se2, study = study,
-                       rho = seq(0, 0.9, by = 0.3), chains = 2,
-                       iter_sampling = 2000)
+                       rho = seq(0, 0.9, by = 0.3), seed = 1)
 sens
 plot(sens)
-}
+\dontshow{\}) # examplesIf}
 }

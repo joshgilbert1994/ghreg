@@ -34,11 +34,10 @@ Plots the posterior mean and credible interval of a parameter against the
 assumed sampling correlation \code{rho}, with ggplot2.
 }
 \examples{
-\donttest{
+\dontshow{if (interactive() || identical(Sys.getenv("IN_PKGDOWN"), "true")) withAutoprint(\{ # examplesIf}
 sens <- gh_sensitivity(persist_sim, es1, se1, es2, se2, study = study,
-                       rho = seq(0, 0.9, by = 0.3), chains = 2,
-                       iter_sampling = 2000)
+                       rho = seq(0, 0.9, by = 0.3), seed = 1)
 plot(sens, ref = c(Naive = 0.535))
 plot(sens) + ggplot2::theme_minimal()
-}
+\dontshow{\}) # examplesIf}
 }

@@ -13,14 +13,12 @@
 #' @return `summary()` returns a tibble with one row per parameter; `coef()`
 #'   returns posterior means; `nobs()` returns the number of effect-size pairs;
 #'   `as_draws()`, `as_draws_array()`, and `as_draws_df()` return the draws.
-#' @examples
-#' \donttest{
+#' @examplesIf interactive() || identical(Sys.getenv("IN_PKGDOWN"), "true")
 #' fit <- gh_reg(persist_sim, es1, se1, es2, se2, study = study, rho = 0.6,
-#'               chains = 2, iter_sampling = 2000)
+#'               seed = 1)
 #' summary(fit)
 #' summary(fit, ci.level = 0.9, diagnostics = FALSE)
 #' coef(fit)
-#' }
 #' @name gh_reg-methods
 NULL
 

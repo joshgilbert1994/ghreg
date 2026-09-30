@@ -31,10 +31,13 @@
 #' the total SD of the true follow-up effects is at least as large (larger
 #' whenever `beta` is not 0).
 #'
-#' With `study = NULL`, or when every study contributes one pair, the study
-#' level is dropped, since only the sum of the study- and pair-level variances
-#' would be identified, and the model is the two-level model in the paper. Its
-#' \eqn{\tau_1}{tau_1} and \eqn{\tau_2}{tau_2} are `es_sd1` and `es_sd2`.
+#' With `study = NULL`, or when every study contributes one pair, the model
+#' has a single level of heterogeneity: the two-level model in the paper,
+#' which treats each pair as its own study. Only the total variance across
+#' pairs is identified, so the output reports it as the between-study SDs
+#' `study_sd1` and `study_sd2` (the paper's \eqn{\tau_1}{tau_1} and
+#' \eqn{\tau_2}{tau_2}), and there are no `es_sd1` or `es_sd2`. If studies do
+#' contribute several pairs, pass `study` to fit the three-level model.
 #'
 #' The study effects \eqn{u_{1k}} and \eqn{u_{2k}} capture clustering of the
 #' *true* effects within studies. The sampling errors of different pairs are
@@ -46,7 +49,7 @@
 #' analytically, so Stan samples only the hyperparameters. The posterior is the
 #' same as that of the latent-variable program in the paper's appendix, but
 #' sampling is faster and free of the funnel geometry that causes divergent
-#' transitions when sampling error is large relative to `es_sd1`.
+#' transitions when sampling error is large relative to the heterogeneity.
 #'
 #' @section The sampling correlation `rho`:
 #' For a difference in means with a constant treatment effect, the correlation
@@ -86,7 +89,8 @@
 #'       columns `term`, `estimate`, `std.error`, `ci.lower`, `ci.upper`,
 #'       `rhat`, `ess_bulk`, and `ess_tail`; see [summary.gh_reg()]}
 #'     \item{`draws`}{posterior draws, a `posterior::draws_array`}
-#'     \item{`fit`}{the `CmdStanMCMC` or `stanfit` object}
+#'     \item{`fit`}{the `CmdStanMCMC` or `stanfit` object, which keeps the
+#'       Stan program's names (`es_sd1` and `es_sd2` in the two-level model)}
 #'     \item{`levels`}{2 or 3}
 #'     \item{`n_pairs`, `n_studies`}{sample sizes}
 #'     \item{`rho`}{the sampling correlations used, one per pair}
@@ -97,14 +101,14 @@
 #'     \item{`alpha`}{mean true follow-up effect when the true endline effect
 #'       is 0}
 #'     \item{`mu`}{mean true endline effect}
-#'     \item{`study_sd1`}{between-study SD of the true endline effects
-#'       (three-level model only)}
+#'     \item{`study_sd1`}{between-study SD of the true endline effects}
 #'     \item{`study_sd2`}{between-study residual SD of the true follow-up
-#'       effects, given the true endline effects (three-level model only)}
+#'       effects, given the true endline effects}
 #'     \item{`es_sd1`}{SD of the true endline effects across effect-size pairs
-#'       within a study}
+#'       within a study (three-level model only)}
 #'     \item{`es_sd2`}{residual SD of the true follow-up effects across
-#'       effect-size pairs within a study, given the true endline effects}}
+#'       effect-size pairs within a study, given the true endline effects
+#'       (three-level model only)}}
 #'
 #' @references Gilbert, J. B., & Himmelsbach, Z. (2026). *Why fadeout is
 #'   (probably) worse than we think: Adjusting for correlated sampling error in
@@ -112,19 +116,14 @@
 #'   Annenberg Institute at Brown University. \doi{10.26300/87r9-qm15}
 #'
 #' @seealso [gh_sensitivity()] to vary `rho`, [gh_prior()], [gh_simulate()].
-#' @examples
-#' \donttest{
-#' # 2 chains of 2000 draws give the default 4000 draws within CRAN's limit
-#' # of 2 cores; the default is 4 chains of 1000 run in parallel
+#' @examplesIf interactive() || identical(Sys.getenv("IN_PKGDOWN"), "true")
 #' fit <- gh_reg(persist_sim, es1, se1, es2, se2, study = study, rho = 0.6,
-#'               chains = 2, iter_sampling = 2000)
+#'               seed = 1)
 #' fit
 #' coef(fit)
 #'
 #' # study-specific sampling correlations
-#' gh_reg(persist_sim, es1, se1, es2, se2, study = study, rho = rho,
-#'        chains = 2, iter_sampling = 2000)
-#' }
+#' gh_reg(persist_sim, es1, se1, es2, se2, study = study, rho = rho, seed = 1)
 #' @export
 gh_reg <- function(data, es1, se1, es2, se2, study = NULL, rho,
                    prior = gh_prior(), backend = gh_backend(), chains = 4,
@@ -146,6 +145,12 @@ gh_reg <- function(data, es1, se1, es2, se2, study = NULL, rho,
   s <- .gh_sample(backend, c(d$sdata, unclass(prior)), pars, chains = chains,
                   cores = cores, iter_warmup = iter_warmup,
                   iter_sampling = iter_sampling, seed = seed, refresh = refresh, ...)
+  # With one level of heterogeneity, its SDs are between-study SDs, as in a
+  # standard random-effects meta-analysis (in the Stan program they are the
+  # pair-level SDs, since that level is always present).
+  if (!d$sdata$has_study)
+    posterior::variables(s$draws) <- sub("^es_sd", "study_sd",
+                                         posterior::variables(s$draws))
 
   out <- structure(
     list(summary = .summarise(s$draws), draws = s$draws, fit = s$fit,

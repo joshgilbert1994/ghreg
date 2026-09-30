@@ -3,12 +3,16 @@ for (backend in c("cmdstanr", "rstan")) {
     skip_if_no_backend(backend)
     set.seed(10)
     d <- gh_simulate(n_studies = 150, n = 400, rho = 0.7, beta = 0.5,
-                     es_sd1 = 0.3, es_sd2 = 0.05)
+                     study_sd1 = 0.3, study_sd2 = 0.05)
     fit <- gh_reg(d, es1, se1, es2, se2, rho = 0.7, backend = backend, seed = 1,
                   chains = 2)
     expect_s3_class(fit, "gh_reg")
     expect_equal(fit$levels, 2L)
-    expect_equal(fit$summary$term, c("beta", "alpha", "mu", "es_sd1", "es_sd2"))
+    # a two-level model's SDs are reported as between-study SDs
+    expect_equal(fit$summary$term,
+                 c("beta", "alpha", "mu", "study_sd1", "study_sd2"))
+    expect_equal(unname(coef(fit)["study_sd1"]), 0.3, tolerance = 0.2)
+    expect_equal(posterior::variables(fit$draws), fit$summary$term)
     sm <- summary(fit)
     expect_s3_class(sm, "tbl_df")
     expect_identical(sm, fit$summary)
@@ -85,11 +89,11 @@ test_that("ghreg doesn't mask broom generics", {
   expect_false(any(c("tidy", "glance", "augment") %in% ns))
 })
 
-test_that("gh_sensitivity() rejects study-level SDs in a two-level model", {
+test_that("gh_sensitivity() rejects pair-level SDs in a two-level model", {
   skip_if_no_backend(gh_backend())
   expect_error(
     suppressWarnings(gh_sensitivity(persist_sim, es1, se1, es2, se2,
-                                    rho = c(0.3, 0.6), parameters = c("beta", "study_sd1"),
+                                    rho = c(0.3, 0.6), parameters = c("beta", "es_sd1"),
                                     chains = 1, iter_warmup = 200, iter_sampling = 200)),
-    'Not in this 2-level model: "study_sd1"')
+    'Not in this 2-level model: "es_sd1"')
 })

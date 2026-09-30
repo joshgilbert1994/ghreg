@@ -24,11 +24,15 @@
 #' \eqn{\sigma_{E1}}{sigma_E1}, and \eqn{\sigma_{E2}}{sigma_E2}, and have the
 #' same names as in the output of [gh_reg()].
 #'
-#' With `study_sd1 = study_sd2 = 0` (the default) there is no study-level
-#' variation: pairs from the same study are independent, so the data follow the
-#' two-level model and the study grouping has no effect. Set `study_sd1` or
-#' `study_sd2` above 0, with `pairs_per_study` above 1, to simulate data for the
-#' three-level model.
+#' By default each study contributes one pair, so the data follow the
+#' two-level model, and the heterogeneity is set at the study level
+#' (`study_sd1 = 0.25`, `es_sd1 = 0`). That matches [gh_reg()], which reports a
+#' two-level model's SDs as `study_sd1` and `study_sd2`: with one pair per
+#' study, only the total SD at each time is identified, so a two-level fit
+#' estimates \eqn{\sqrt{\sigma_{S1}^2 + \sigma_{E1}^2}}{sqrt(sigma_S1^2 +
+#' sigma_E1^2)} whichever level you put the variation in. To simulate data for
+#' the three-level model, give studies several pairs (`pairs_per_study` above
+#' 1) and set the pair-level SDs `es_sd1` or `es_sd2` above 0.
 #'
 #' Each pair is simulated as its own trial, so sampling errors are independent
 #' across pairs, including pairs from the same study. In real meta-analyses,
@@ -69,8 +73,8 @@
 #' table(table(d3$study))
 #' @export
 gh_simulate <- function(n_studies = 50, pairs_per_study = 1, n = 100, rho = 0.5,
-                        mu = 0.5, alpha = 0, beta = 0.5, es_sd1 = 0.25,
-                        es_sd2 = 0, study_sd1 = 0, study_sd2 = 0) {
+                        mu = 0.5, alpha = 0, beta = 0.5, es_sd1 = 0,
+                        es_sd2 = 0, study_sd1 = 0.25, study_sd2 = 0) {
   pairs_per_study <- rep_len(pairs_per_study, n_studies)
   if (any(pairs_per_study < 1)) stop("`pairs_per_study` must be at least 1.", call. = FALSE)
   study <- rep(seq_len(n_studies), pairs_per_study)

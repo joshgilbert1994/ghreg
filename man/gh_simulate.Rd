@@ -12,9 +12,9 @@ gh_simulate(
   mu = 0.5,
   alpha = 0,
   beta = 0.5,
-  es_sd1 = 0.25,
+  es_sd1 = 0,
   es_sd2 = 0,
-  study_sd1 = 0,
+  study_sd1 = 0.25,
   study_sd2 = 0
 )
 }
@@ -78,11 +78,17 @@ The arguments \code{study_sd1}, \code{study_sd2}, \code{es_sd1}, and \code{es_sd
 \eqn{\sigma_{E1}}{sigma_E1}, and \eqn{\sigma_{E2}}{sigma_E2}, and have the
 same names as in the output of \code{\link[=gh_reg]{gh_reg()}}.
 
-With \code{study_sd1 = study_sd2 = 0} (the default) there is no study-level
-variation: pairs from the same study are independent, so the data follow the
-two-level model and the study grouping has no effect. Set \code{study_sd1} or
-\code{study_sd2} above 0, with \code{pairs_per_study} above 1, to simulate data for the
-three-level model.
+By default each study contributes one pair, so the data follow the
+two-level model, and the heterogeneity is set at the study level
+(\code{study_sd1 = 0.25}, \code{es_sd1 = 0}). That matches \code{\link[=gh_reg]{gh_reg()}}, which reports a
+two-level model's SDs as \code{study_sd1} and \code{study_sd2}: with one pair per
+study, only the total SD at each time is identified, so a two-level fit
+estimates \eqn{\sqrt{\sigma_{S1}^2 + \sigma_{E1}^2}}{sqrt(sigma_S1^2 +
+sigma_E1^2)} whichever level you put the variation in. To simulate data for
+the three-level model, give studies several pairs (\code{pairs_per_study} above
+\enumerate{
+\item and set the pair-level SDs \code{es_sd1} or \code{es_sd2} above 0.
+}
 
 Each pair is simulated as its own trial, so sampling errors are independent
 across pairs, including pairs from the same study. In real meta-analyses,

@@ -1,6 +1,6 @@
 Package: ghreg
 Title: Persistence Meta-Regression Adjusted for Correlated Sampling Error
-Version: 0.2.0
+Version: 0.2.1
 Authors@R: 
     person("Joshua B.", "Gilbert", , "joshua_gilbert@gse.harvard.edu", role = c("aut", "cre"))
 Description: Fits the Bayesian persistence meta-regression of Gilbert and
