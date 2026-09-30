@@ -18,8 +18,8 @@ gh_sensitivity(
 to every pair of effect sizes.}
 
 \item{parameters}{Parameters to report: any of \code{"beta"}, \code{"alpha"}, \code{"mu"},
-\code{"tau1"}, \code{"tau2"}, and, for the three-level model, \code{"sd_u1"} and
-\code{"sd_u2"}. Every fit estimates all parameters; this only chooses which
+\code{"es_sd1"}, \code{"es_sd2"}, and, for the three-level model, \code{"study_sd1"} and
+\code{"study_sd2"}. Every fit estimates all parameters; this only chooses which
 rows are kept. Unknown names are an error.}
 
 \item{ci.level}{Probability mass of the credible intervals.}
@@ -38,7 +38,8 @@ outcome across time is unknown. The Stan model is compiled once and reused.
 \examples{
 \donttest{
 sens <- gh_sensitivity(persist_sim, es1, se1, es2, se2, study = study,
-                       rho = seq(0, 0.9, by = 0.3), chains = 2)
+                       rho = seq(0, 0.9, by = 0.3), chains = 2,
+                       iter_sampling = 2000)
 sens
 plot(sens)
 }

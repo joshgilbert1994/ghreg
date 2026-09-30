@@ -7,8 +7,8 @@
 #' `rho` drawn from a Beta(6, 3) distribution (mean 0.67).
 #'
 #' The data-generating values are `mu = 0.4`, `alpha = 0`, `beta = 0.4`,
-#' `sd_u1 = 0.15`, `sd_u2 = 0.05`, `tau1 = 0.15`, and `tau2 = 0.05`, so 40% of
-#' an endline effect persists to follow-up.
+#' `study_sd1 = 0.15`, `study_sd2 = 0.05`, `es_sd1 = 0.15`, and
+#' `es_sd2 = 0.05`, so 40% of an endline effect persists to follow-up.
 #'
 #' @format A data frame with one row per pair of effect sizes:
 #' \describe{

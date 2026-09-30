@@ -26,23 +26,23 @@ parameters {
   real mu;
   real alpha;
   real beta;
-  vector<lower=0>[has_study] sd_u1;
-  vector<lower=0>[has_study] sd_u2;
-  real<lower=0> tau1;
-  real<lower=0> tau2;
+  vector<lower=0>[has_study] study_sd1;
+  vector<lower=0>[has_study] study_sd2;
+  real<lower=0> es_sd1;
+  real<lower=0> es_sd2;
 }
 model {
   mu ~ normal(p_mu[1], p_mu[2]);
   alpha ~ normal(p_alpha[1], p_alpha[2]);
   beta ~ normal(p_beta[1], p_beta[2]);
-  sd_u1 ~ cauchy(0, sd_scale);
-  sd_u2 ~ cauchy(0, sd_scale);
-  tau1 ~ cauchy(0, sd_scale);
-  tau2 ~ cauchy(0, sd_scale);
+  study_sd1 ~ cauchy(0, sd_scale);
+  study_sd2 ~ cauchy(0, sd_scale);
+  es_sd1 ~ cauchy(0, sd_scale);
+  es_sd2 ~ cauchy(0, sd_scale);
 
   {
-    real t1 = square(tau1);
-    real t2 = square(tau2);
+    real t1 = square(es_sd1);
+    real t2 = square(es_sd2);
     // per pair: D = V + S_e, where S_e is the ES-level covariance of (theta1, theta2)
     vector[K] d11 = v1 + t1;
     vector[K] d12 = c12 + beta * t1;
@@ -58,10 +58,10 @@ model {
 
     if (has_study) {
       // S_u: study-level covariance of (theta1, theta2)
-      real s1 = square(sd_u1[1]);
+      real s1 = square(study_sd1[1]);
       real s11 = s1;
       real s12 = beta * s1;
-      real s22 = square(beta) * s1 + square(sd_u2[1]);
+      real s22 = square(beta) * s1 + square(study_sd2[1]);
       // per study: A = sum_j D_j^-1 (symmetric), f = sum_j D_j^-1 e_j
       vector[J] a11 = rep_vector(0, J);
       vector[J] a12 = rep_vector(0, J);

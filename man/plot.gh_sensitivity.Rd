@@ -10,7 +10,7 @@
   ref = NULL,
   xlab = expression("Sampling correlation " * rho),
   ylab = NULL,
-  main = NULL,
+  title = NULL,
   ...
 )
 }
@@ -22,14 +22,23 @@
 \item{ref}{Optional reference values to mark with dashed horizontal lines,
 such as the naive meta-regression slope. Names, if given, label the lines.}
 
-\item{xlab, ylab, main}{Axis labels and title.}
+\item{xlab, ylab, title}{Axis labels and title.}
 
-\item{...}{Further arguments to \code{\link[graphics:plot]{graphics::plot()}}.}
+\item{...}{Unused.}
 }
 \value{
-\code{x}, invisibly.
+A ggplot object, which you can modify further with \code{+}.
 }
 \description{
-Plots the posterior mean and interval of a parameter against the assumed
-sampling correlation \code{rho}.
+Plots the posterior mean and credible interval of a parameter against the
+assumed sampling correlation \code{rho}, with ggplot2.
+}
+\examples{
+\donttest{
+sens <- gh_sensitivity(persist_sim, es1, se1, es2, se2, study = study,
+                       rho = seq(0, 0.9, by = 0.3), chains = 2,
+                       iter_sampling = 2000)
+plot(sens, ref = c(Naive = 0.535))
+plot(sens) + ggplot2::theme_minimal()
+}
 }

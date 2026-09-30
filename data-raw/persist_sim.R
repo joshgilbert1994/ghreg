@@ -14,7 +14,7 @@ persist_sim <- gh_simulate(
   n = sample(40:200, K, replace = TRUE),
   rho = round(rbeta(K, 6, 3), 2),
   mu = 0.4, alpha = 0, beta = 0.4,
-  sd_u1 = 0.15, sd_u2 = 0.05, tau1 = 0.15, tau2 = 0.05
+  study_sd1 = 0.15, study_sd2 = 0.05, es_sd1 = 0.15, es_sd2 = 0.05
 )
 
 usethis::use_data(persist_sim, overwrite = TRUE)

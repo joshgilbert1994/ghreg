@@ -49,7 +49,7 @@ tibble, at the 95\% level, is stored in \code{fit$summary}.
 \examples{
 \donttest{
 fit <- gh_reg(persist_sim, es1, se1, es2, se2, study = study, rho = 0.6,
-              chains = 2)
+              chains = 2, iter_sampling = 2000)
 summary(fit)
 summary(fit, ci.level = 0.9, diagnostics = FALSE)
 coef(fit)

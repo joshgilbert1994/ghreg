@@ -8,8 +8,8 @@
 #' @param rho Values of the sampling correlation to try. Each value is applied
 #'   to every pair of effect sizes.
 #' @param parameters Parameters to report: any of `"beta"`, `"alpha"`, `"mu"`,
-#'   `"tau1"`, `"tau2"`, and, for the three-level model, `"sd_u1"` and
-#'   `"sd_u2"`. Every fit estimates all parameters; this only chooses which
+#'   `"es_sd1"`, `"es_sd2"`, and, for the three-level model, `"study_sd1"` and
+#'   `"study_sd2"`. Every fit estimates all parameters; this only chooses which
 #'   rows are kept. Unknown names are an error.
 #' @param ci.level Probability mass of the credible intervals.
 #' @return A tibble of class `gh_sensitivity`, with one row per value of `rho`
@@ -19,7 +19,8 @@
 #' @examples
 #' \donttest{
 #' sens <- gh_sensitivity(persist_sim, es1, se1, es2, se2, study = study,
-#'                        rho = seq(0, 0.9, by = 0.3), chains = 2)
+#'                        rho = seq(0, 0.9, by = 0.3), chains = 2,
+#'                        iter_sampling = 2000)
 #' sens
 #' plot(sens)
 #' }
@@ -33,7 +34,7 @@ gh_sensitivity <- function(..., rho = seq(0, 0.9, by = 0.1), parameters = "beta"
   .check_names(parameters, .gh_parameters, "Unknown `parameters`")
   out <- lapply(rho, function(rr) {
     f <- gh_reg(..., rho = !!rr)
-    # sd_u1 and sd_u2 exist only in the three-level model
+    # study_sd1 and study_sd2 exist only in the three-level model
     .check_names(parameters, f$summary$term,
                  sprintf("Not in this %d-level model", f$levels))
     s <- .summarise(f$draws, ci.level = ci.level)
@@ -49,39 +50,53 @@ gh_sensitivity <- function(..., rho = seq(0, 0.9, by = 0.1), parameters = "beta"
 
 #' Plot a sensitivity analysis
 #'
-#' Plots the posterior mean and interval of a parameter against the assumed
-#' sampling correlation `rho`.
+#' Plots the posterior mean and credible interval of a parameter against the
+#' assumed sampling correlation `rho`, with ggplot2.
 #'
 #' @param x Output of [gh_sensitivity()].
 #' @param parameter Parameter to plot.
 #' @param ref Optional reference values to mark with dashed horizontal lines,
 #'   such as the naive meta-regression slope. Names, if given, label the lines.
-#' @param xlab,ylab,main Axis labels and title.
-#' @param ... Further arguments to [graphics::plot()].
-#' @return `x`, invisibly.
+#' @param xlab,ylab,title Axis labels and title.
+#' @param ... Unused.
+#' @return A ggplot object, which you can modify further with `+`.
+#' @examples
+#' \donttest{
+#' sens <- gh_sensitivity(persist_sim, es1, se1, es2, se2, study = study,
+#'                        rho = seq(0, 0.9, by = 0.3), chains = 2,
+#'                        iter_sampling = 2000)
+#' plot(sens, ref = c(Naive = 0.535))
+#' plot(sens) + ggplot2::theme_minimal()
+#' }
 #' @export
 plot.gh_sensitivity <- function(x, parameter = "beta", ref = NULL,
                                 xlab = expression("Sampling correlation " * rho),
-                                ylab = NULL, main = NULL, ...) {
+                                ylab = NULL, title = NULL, ...) {
   if (!is.character(parameter) || length(parameter) != 1)
     stop("`parameter` must be a single parameter name.", call. = FALSE)
   .check_names(parameter, unique(x$term), "Not in this sensitivity analysis")
-  d <- x[x$term == parameter, ]
-  lo <- d$ci.lower; hi <- d$ci.upper
+  d <- as.data.frame(x[x$term == parameter, ])
   if (is.null(ylab))
     ylab <- if (parameter == "beta") "Conditional persistence" else parameter
-  graphics::plot(d$rho, d$estimate, ylim = range(lo, hi, ref), pch = 19,
-                 xlab = xlab, ylab = ylab, main = main, las = 1, ...)
-  graphics::arrows(d$rho, lo, d$rho, hi, length = 0, lwd = 1.5)
+  p <- ggplot2::ggplot(d, ggplot2::aes(x = .data$rho, y = .data$estimate))
   if (!is.null(ref)) {
-    graphics::abline(h = ref, lty = 2, col = "grey40")
+    p <- p + ggplot2::geom_hline(yintercept = ref, linetype = "dashed",
+                                 colour = "grey45")
     if (!is.null(names(ref)))
-      graphics::text(max(d$rho), ref, names(ref), pos = 3, cex = 0.8, col = "grey30")
+      p <- p + ggplot2::annotate("text", x = max(d$rho), y = ref,
+                                 label = names(ref), hjust = 1, vjust = -0.5,
+                                 size = 3.2, colour = "grey30")
   }
-  invisible(x)
+  p +
+    ggplot2::geom_errorbar(ggplot2::aes(ymin = .data$ci.lower,
+                                        ymax = .data$ci.upper), width = 0) +
+    ggplot2::geom_point(size = 2.2) +
+    ggplot2::labs(x = xlab, y = ylab, title = title) +
+    ggplot2::theme_bw()
 }
 
-.gh_parameters <- c("beta", "alpha", "mu", "sd_u1", "sd_u2", "tau1", "tau2")
+.gh_parameters <- c("beta", "alpha", "mu", "study_sd1", "study_sd2", "es_sd1",
+                    "es_sd2")
 
 .check_names <- function(x, valid, what) {
   bad <- setdiff(x, valid)

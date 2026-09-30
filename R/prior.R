@@ -5,8 +5,8 @@
 #' all standard deviations.
 #'
 #' @param mu,alpha,beta Normal priors, each given as `c(mean, sd)`.
-#' @param sd_scale Scale of the half-Cauchy prior on `tau1`, `tau2`, `sd_u1`,
-#'   and `sd_u2`.
+#' @param sd_scale Scale of the half-Cauchy prior on all four SDs: `study_sd1`,
+#'   `study_sd2`, `es_sd1`, and `es_sd2`.
 #' @return An object of class `gh_prior`, to pass to [gh_reg()].
 #' @examples
 #' gh_prior()
@@ -32,6 +32,7 @@ print.gh_prior <- function(x, ...) {
   cat(sprintf("  %-5s ~ normal(%g, %g)\n", c("mu", "alpha", "beta"),
               c(x$p_mu[1], x$p_alpha[1], x$p_beta[1]),
               c(x$p_mu[2], x$p_alpha[2], x$p_beta[2])), sep = "")
-  cat(sprintf("  tau1, tau2, sd_u1, sd_u2 ~ half-Cauchy(0, %g)\n", x$sd_scale))
+  cat(sprintf("  study_sd1, study_sd2, es_sd1, es_sd2 ~ half-Cauchy(0, %g)\n",
+              x$sd_scale))
   invisible(x)
 }

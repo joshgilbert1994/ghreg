@@ -32,7 +32,7 @@ of 40 to 200 participants whose outcome has a test-retest correlation
 }
 \details{
 The data-generating values are \code{mu = 0.4}, \code{alpha = 0}, \code{beta = 0.4},
-\code{sd_u1 = 0.15}, \code{sd_u2 = 0.05}, \code{tau1 = 0.15}, and \code{tau2 = 0.05}, so 40\% of
-an endline effect persists to follow-up.
+\code{study_sd1 = 0.15}, \code{study_sd2 = 0.05}, \code{es_sd1 = 0.15}, and
+\code{es_sd2 = 0.05}, so 40\% of an endline effect persists to follow-up.
 }
 \keyword{datasets}

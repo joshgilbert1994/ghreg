@@ -53,3 +53,15 @@ test_that("gh_backend() respects the option", {
   withr::local_options(ghreg.backend = "rstan")
   expect_equal(gh_backend(), "rstan")
 })
+
+test_that("the ESS warning scales with the number of chains", {
+  mock <- function(chains, ess) {
+    draws <- posterior::subset_draws(posterior::example_draws(), chain = seq_len(chains))
+    list(divergences = 0L, draws = draws,
+         summary = tibble::tibble(term = c("beta", "es_sd2"), rhat = 1,
+                                  ess_bulk = c(1000, ess)))
+  }
+  # 300 is enough for 2 chains (threshold 200) but not for 4 (threshold 400)
+  expect_no_warning(ghreg:::.check_fit(mock(2, 300)))
+  expect_warning(ghreg:::.check_fit(mock(4, 300)), "below 400 .* for es_sd2;")
+})

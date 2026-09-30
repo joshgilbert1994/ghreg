@@ -14,10 +14,6 @@ vignette: >
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.path = "figures/",
                       fig.width = 6, fig.height = 4.2, dpi = 110, out.width = "90%")
 options(width = 90)
-knitr::knit_hooks$set(par = function(before, options, envir) {
-  if (before) par(mar = c(4.5, 4.5, 1, 1))
-})
-knitr::opts_chunk$set(par = TRUE)
 ```
 
 Meta-analyses often ask how much of an intervention's effect persists by regressing effect sizes at follow-up on effect sizes at endline. The slope, the *conditional persistence*, is the expected follow-up effect per unit of endline effect: 1 means effects fully persist and 0 means they fully fade.
@@ -55,13 +51,23 @@ naive <- lm(es2 ~ es1, data = persist_sim)
 coef(naive)
 ```
 
-```{r scatter, fig.cap = "Observed effect sizes. The dashed line is the true relation (slope 0.4); the solid line is the naive fit."}
-plot(es2 ~ es1, data = persist_sim, pch = 19, col = adjustcolor("grey30", 0.5),
-     xlab = "Endline effect size", ylab = "Follow-up effect size", las = 1)
-abline(naive, lwd = 2, col = "#D55E00")
-abline(0, 0.4, lwd = 2, lty = 2)
-legend("topleft", c("Naive fit", "True relation"), col = c("#D55E00", "black"),
-       lty = 1:2, lwd = 2, bty = "n")
+```{r scatter, fig.cap = "Observed effect sizes, with the naive fit and the true relation (slope 0.4)."}
+library(ggplot2)
+lines <- data.frame(line = c("Naive fit", "True relation"),
+                    intercept = c(coef(naive)[[1]], 0),
+                    slope = c(coef(naive)[[2]], 0.4))
+ggplot(persist_sim, aes(es1, es2)) +
+  geom_point(alpha = 0.5) +
+  geom_abline(aes(intercept = intercept, slope = slope, colour = line,
+                  linetype = line), data = lines, linewidth = 1) +
+  scale_colour_manual(values = c("Naive fit" = "#D55E00",
+                                 "True relation" = "black")) +
+  scale_linetype_manual(values = c("Naive fit" = "solid",
+                                   "True relation" = "dashed")) +
+  labs(x = "Endline effect size", y = "Follow-up effect size",
+       colour = NULL, linetype = NULL) +
+  theme_bw() +
+  theme(legend.position = "bottom")
 ```
 
 ## Fitting the model
@@ -78,8 +84,11 @@ The posterior mean of `beta` is well below the naive slope, and its 95% interval
 
 - `alpha`: mean true follow-up effect when the true endline effect is 0;
 - `mu`: mean true endline effect;
-- `sd_u1`, `sd_u2`: between-study SDs of the true endline effects and of the follow-up effects given the endline effects;
-- `tau1`, `tau2`: the same SDs within studies.
+- `study_sd1`: between-study SD of the true endline effects;
+- `study_sd2`: between-study *residual* SD of the true follow-up effects, given the true endline effects;
+- `es_sd1`, `es_sd2`: the same two SDs across effect-size pairs within a study.
+
+The SDs ending in 2 are residual SDs: they measure how much the true follow-up effects vary beyond what the true endline effects predict, so the total SD of the true follow-up effects is at least as large (larger whenever `beta` is not 0).
 
 Because the data have several pairs per study, `gh_reg()` fit the three-level model. With `study = NULL`, or one pair per study, it fits the two-level model in the paper.
 
@@ -116,7 +125,7 @@ plot(sens, ref = c(Naive = coef(naive)[["es1"]], Truth = 0.4))
 
 Assuming $\rho = 0$ corrects only for attenuation, so it gives a *larger* slope than the naive fit. As the assumed correlation rises, the estimate falls below the naive slope. For these data, the corrected slope is smaller than the naive one for any assumed correlation above about 0.5. Reporting the whole curve lets readers apply their own beliefs about how stable the outcomes are.
 
-`sens` is a tibble with the same columns as `summary(fit)`, plus `rho` and the number of divergent transitions, so it's easy to filter, tabulate, or plot with other tools such as ggplot2.
+`sens` is a tibble with the same columns as `summary(fit)`, plus `rho` and the number of divergent transitions, so it's easy to filter or tabulate. `plot()` returns a ggplot, so you can restyle it with `+`, for example `plot(sens) + theme_minimal()`.
 
 ## Options
 
@@ -139,11 +148,13 @@ coef(lm(es2 ~ es1, d))["es1"]
 coef(gh_reg(d, es1, se1, es2, se2, rho = 0.8, seed = 1))["beta"]
 ```
 
-By default the simulated studies have no study-level variation (`sd_u1 = sd_u2 = 0`), so pairs from the same study are independent and the data follow the two-level model. To simulate three-level data, give studies several pairs and set the study-level SDs above zero:
+By default the simulated studies have no study-level variation (`study_sd1 = study_sd2 = 0`), so pairs from the same study are independent and the data follow the two-level model. To simulate three-level data, give studies several pairs and set the study-level SDs above zero:
 
 ```{r sim3}
 set.seed(2)
-d3 <- gh_simulate(n_studies = 80, pairs_per_study = 3, n = 150, rho = 0.7, beta = 0.5, tau1 = 0.15, tau2 = 0.05, sd_u1 = 0.2, sd_u2 = 0.1)
+d3 <- gh_simulate(n_studies = 80, pairs_per_study = 3, n = 150, rho = 0.7,
+                  beta = 0.5, es_sd1 = 0.15, es_sd2 = 0.05,
+                  study_sd1 = 0.2, study_sd2 = 0.1)
 fit3 <- gh_reg(d3, es1, se1, es2, se2, study = study, rho = 0.7, seed = 1)
 summary(fit3, diagnostics = FALSE)
 ```
@@ -158,16 +169,16 @@ $$
 \theta_{2jk} &= \alpha + \beta\,\theta_{1jk} + u_{2k} + \epsilon_{2jk}, \\
 \begin{pmatrix}\delta_{1jk} \\ \delta_{2jk}\end{pmatrix} &\sim
 N\!\left(\begin{pmatrix}\theta_{1jk} \\ \theta_{2jk}\end{pmatrix},
-\begin{pmatrix}\sigma_{1jk}^2 & \rho_{jk}\sigma_{1jk}\sigma_{2jk} \\
-\rho_{jk}\sigma_{1jk}\sigma_{2jk} & \sigma_{2jk}^2\end{pmatrix}\right),
+\begin{pmatrix}\mathrm{se}_{1jk}^2 & \rho_{jk}\,\mathrm{se}_{1jk}\,\mathrm{se}_{2jk} \\
+\rho_{jk}\,\mathrm{se}_{1jk}\,\mathrm{se}_{2jk} & \mathrm{se}_{2jk}^2\end{pmatrix}\right),
 \end{aligned}
 $$
 
-with $u_{1k} \sim N(0, sd_{u1}^2)$, $u_{2k} \sim N(0, sd_{u2}^2)$, $\epsilon_{1jk} \sim N(0, \tau_1^2)$, and $\epsilon_{2jk} \sim N(0, \tau_2^2)$. The same $\beta$ links true effects within and between studies.
+with $u_{1k} \sim N(0, \sigma_{S1}^2)$, $u_{2k} \sim N(0, \sigma_{S2}^2)$, $\epsilon_{1jk} \sim N(0, \sigma_{E1}^2)$, and $\epsilon_{2jk} \sim N(0, \sigma_{E2}^2)$. These four SDs are reported as `study_sd1`, `study_sd2`, `es_sd1`, and `es_sd2`: S (study) is the between-study level and E (effect size) the level of effect-size pairs within studies. In the paper's two-level model, `es_sd1` and `es_sd2` are $\tau_1$ and $\tau_2$. The same $\beta$ links true effects within and between studies.
 
 The study effects $u_{1k}$ and $u_{2k}$ capture clustering of the *true* effects within studies. The sampling errors of different pairs are assumed independent, even within a study. When a study reports several effect sizes from the same participants, their sampling errors are likely correlated as well, which the model does not account for.
 
-Rather than sampling every latent effect, the Stan program integrates $\theta$, $\epsilon$, and $u$ out analytically. Each pair contributes a $2 \times 2$ block and each study a rank-2 correction, handled with the Woodbury identity. The posterior is the same as that of the latent-variable program in the paper's appendix, but Stan samples only the seven hyperparameters. That makes fits fast and avoids the funnel geometry that causes divergent transitions when sampling error is large relative to $\tau_1$.
+Rather than sampling every latent effect, the Stan program integrates $\theta$, $\epsilon$, and $u$ out analytically. Each pair contributes a $2 \times 2$ block and each study a rank-2 correction, handled with the Woodbury identity. The posterior is the same as that of the latent-variable program in the paper's appendix, but Stan samples only the seven hyperparameters. That makes fits fast and avoids the funnel geometry that causes divergent transitions when sampling error is large relative to `es_sd1`.
 
 ## Reference
 

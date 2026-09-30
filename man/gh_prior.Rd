@@ -9,8 +9,8 @@ gh_prior(mu = c(0, 1), alpha = c(0, 1), beta = c(0, 1), sd_scale = 0.5)
 \arguments{
 \item{mu, alpha, beta}{Normal priors, each given as \code{c(mean, sd)}.}
 
-\item{sd_scale}{Scale of the half-Cauchy prior on \code{tau1}, \code{tau2}, \code{sd_u1},
-and \code{sd_u2}.}
+\item{sd_scale}{Scale of the half-Cauchy prior on all four SDs: \code{study_sd1},
+\code{study_sd2}, \code{es_sd1}, and \code{es_sd2}.}
 }
 \value{
 An object of class \code{gh_prior}, to pass to \code{\link[=gh_reg]{gh_reg()}}.

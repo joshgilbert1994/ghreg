@@ -12,10 +12,10 @@ gh_simulate(
   mu = 0.5,
   alpha = 0,
   beta = 0.5,
-  tau1 = 0.25,
-  tau2 = 0,
-  sd_u1 = 0,
-  sd_u2 = 0
+  es_sd1 = 0.25,
+  es_sd2 = 0,
+  study_sd1 = 0,
+  study_sd2 = 0
 )
 }
 \arguments{
@@ -36,15 +36,16 @@ reliability): one number, or one per pair.}
 \item{beta}{Conditional persistence: the slope of the true follow-up effect
 on the true endline effect.}
 
-\item{tau1}{SD of the true endline effects across pairs within a study.}
+\item{es_sd1}{SD of the true endline effects across effect-size pairs within
+a study.}
 
-\item{tau2}{Residual SD of the true follow-up effects across pairs within a
-study, given the true endline effects.}
+\item{es_sd2}{Residual SD of the true follow-up effects across effect-size
+pairs within a study, given the true endline effects.}
 
-\item{sd_u1}{SD of the study effects on the true endline effects.}
+\item{study_sd1}{Between-study SD of the true endline effects.}
 
-\item{sd_u2}{SD of the study effects on the true follow-up effects, given
-the true endline effects.}
+\item{study_sd2}{Between-study residual SD of the true follow-up effects,
+given the true endline effects.}
 }
 \value{
 A data frame with one row per pair: \code{study}, \code{es_id}, \code{n}, \code{rho},
@@ -66,15 +67,22 @@ standardized scale. Participants are split evenly between arms.
 The true effects follow the model in \code{\link[=gh_reg]{gh_reg()}}:
 \deqn{\theta_{1jk} = \mu + u_{1k} + \epsilon_{1jk}}{theta1_jk = mu + u1_k + eps1_jk}
 \deqn{\theta_{2jk} = \alpha + \beta \theta_{1jk} + u_{2k} + \epsilon_{2jk}}{theta2_jk = alpha + beta * theta1_jk + u2_k + eps2_jk}
-with study effects \eqn{u_{1k} \sim N(0, sd_{u1}^2)}{u1_k ~ N(0, sd_u1^2)} and
-\eqn{u_{2k} \sim N(0, sd_{u2}^2)}{u2_k ~ N(0, sd_u2^2)} shared by every pair in study \eqn{k}, and
-pair-level deviations \eqn{\epsilon_{1jk} \sim N(0, \tau_1^2)}{eps1_jk ~ N(0, tau1^2)} and
-\eqn{\epsilon_{2jk} \sim N(0, \tau_2^2)}{eps2_jk ~ N(0, tau2^2)}.
+with study effects
+\eqn{u_{1k} \sim N(0, \sigma_{S1}^2)}{u1_k ~ N(0, sigma_S1^2)} and
+\eqn{u_{2k} \sim N(0, \sigma_{S2}^2)}{u2_k ~ N(0, sigma_S2^2)}
+shared by every pair in study \eqn{k}, and pair-level deviations
+\eqn{\epsilon_{1jk} \sim N(0, \sigma_{E1}^2)}{eps1_jk ~ N(0, sigma_E1^2)} and
+\eqn{\epsilon_{2jk} \sim N(0, \sigma_{E2}^2)}{eps2_jk ~ N(0, sigma_E2^2)}.
+The arguments \code{study_sd1}, \code{study_sd2}, \code{es_sd1}, and \code{es_sd2} set
+\eqn{\sigma_{S1}}{sigma_S1}, \eqn{\sigma_{S2}}{sigma_S2},
+\eqn{\sigma_{E1}}{sigma_E1}, and \eqn{\sigma_{E2}}{sigma_E2}, and have the
+same names as in the output of \code{\link[=gh_reg]{gh_reg()}}.
 
-With \code{sd_u1 = sd_u2 = 0} (the default) there is no study-level variation:
-pairs from the same study are independent, so the data follow the two-level
-model and the study grouping has no effect. Set \code{sd_u1} or \code{sd_u2} above 0,
-with \code{pairs_per_study} above 1, to simulate data for the three-level model.
+With \code{study_sd1 = study_sd2 = 0} (the default) there is no study-level
+variation: pairs from the same study are independent, so the data follow the
+two-level model and the study grouping has no effect. Set \code{study_sd1} or
+\code{study_sd2} above 0, with \code{pairs_per_study} above 1, to simulate data for the
+three-level model.
 
 Each pair is simulated as its own trial, so sampling errors are independent
 across pairs, including pairs from the same study. In real meta-analyses,
@@ -91,6 +99,6 @@ coef(lm(es2 ~ es1, d))
 
 # three-level data: 40 studies with 3 pairs each and study-level variation
 d3 <- gh_simulate(n_studies = 40, pairs_per_study = 3, rho = 0.7,
-                  tau1 = 0.15, sd_u1 = 0.2, sd_u2 = 0.05)
+                  es_sd1 = 0.15, study_sd1 = 0.2, study_sd2 = 0.05)
 table(table(d3$study))
 }

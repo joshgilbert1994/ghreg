@@ -22,4 +22,5 @@
 #'   Annenberg Institute at Brown University. \doi{10.26300/87r9-qm15}
 #' @keywords internal
 #' @importFrom stats coef nobs
+#' @importFrom rlang .data
 "_PACKAGE"

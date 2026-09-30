@@ -15,15 +15,26 @@
 #'   \Sigma_{jk}\right),}{(es1_jk, es2_jk) ~ N((theta1_jk, theta2_jk), Sigma_jk),}
 #' where \eqn{\Sigma_{jk}} has variances `se1^2` and `se2^2` and correlation
 #' `rho`, and
-#' \eqn{u_{1k} \sim N(0, sd_{u1}^2)}{u1_k ~ N(0, sd_u1^2)},
-#' \eqn{u_{2k} \sim N(0, sd_{u2}^2)}{u2_k ~ N(0, sd_u2^2)},
-#' \eqn{\epsilon_{1jk} \sim N(0, \tau_1^2)}{eps1_jk ~ N(0, tau1^2)}, and
-#' \eqn{\epsilon_{2jk} \sim N(0, \tau_2^2)}{eps2_jk ~ N(0, tau2^2)}.
+#' \eqn{u_{1k} \sim N(0, \sigma_{S1}^2)}{u1_k ~ N(0, sigma_S1^2)},
+#' \eqn{u_{2k} \sim N(0, \sigma_{S2}^2)}{u2_k ~ N(0, sigma_S2^2)},
+#' \eqn{\epsilon_{1jk} \sim N(0, \sigma_{E1}^2)}{eps1_jk ~ N(0, sigma_E1^2)},
+#' and \eqn{\epsilon_{2jk} \sim N(0, \sigma_{E2}^2)}{eps2_jk ~ N(0, sigma_E2^2)}.
 #' The same `beta` links the true effects within and between studies.
 #'
+#' The four standard deviations \eqn{\sigma_{S1}}{sigma_S1},
+#' \eqn{\sigma_{S2}}{sigma_S2}, \eqn{\sigma_{E1}}{sigma_E1}, and
+#' \eqn{\sigma_{E2}}{sigma_E2} are reported as `study_sd1`, `study_sd2`,
+#' `es_sd1`, and `es_sd2`: S (study) is the between-study level and E (effect
+#' size) the level of effect-size pairs within studies. The "1" SDs describe
+#' the true endline effects. The "2" SDs are *residual*: they describe the
+#' true follow-up effects after conditioning on the true endline effects, so
+#' the total SD of the true follow-up effects is at least as large (larger
+#' whenever `beta` is not 0).
+#'
 #' With `study = NULL`, or when every study contributes one pair, the study
-#' level is dropped (only \eqn{sd_{u}^2 + \tau^2} would be identified) and the
-#' model is the two-level model in the paper.
+#' level is dropped, since only the sum of the study- and pair-level variances
+#' would be identified, and the model is the two-level model in the paper. Its
+#' \eqn{\tau_1}{tau_1} and \eqn{\tau_2}{tau_2} are `es_sd1` and `es_sd2`.
 #'
 #' The study effects \eqn{u_{1k}} and \eqn{u_{2k}} capture clustering of the
 #' *true* effects within studies. The sampling errors of different pairs are
@@ -35,7 +46,7 @@
 #' analytically, so Stan samples only the hyperparameters. The posterior is the
 #' same as that of the latent-variable program in the paper's appendix, but
 #' sampling is faster and free of the funnel geometry that causes divergent
-#' transitions when sampling error is large relative to \eqn{\tau_1}.
+#' transitions when sampling error is large relative to `es_sd1`.
 #'
 #' @section The sampling correlation `rho`:
 #' For a difference in means with a constant treatment effect, the correlation
@@ -80,10 +91,20 @@
 #'     \item{`n_pairs`, `n_studies`}{sample sizes}
 #'     \item{`rho`}{the sampling correlations used, one per pair}
 #'     \item{`divergences`, `max_treedepth`}{sampler diagnostics}}
-#'   The parameters are `beta` (conditional persistence), `alpha` (mean true
-#'   follow-up effect when the true endline effect is 0), `mu` (mean true
-#'   endline effect), `sd_u1` and `sd_u2` (study-level SDs; three-level model
-#'   only), and `tau1` and `tau2` (effect-size-level SDs).
+#'   The parameters are
+#'   \describe{
+#'     \item{`beta`}{conditional persistence}
+#'     \item{`alpha`}{mean true follow-up effect when the true endline effect
+#'       is 0}
+#'     \item{`mu`}{mean true endline effect}
+#'     \item{`study_sd1`}{between-study SD of the true endline effects
+#'       (three-level model only)}
+#'     \item{`study_sd2`}{between-study residual SD of the true follow-up
+#'       effects, given the true endline effects (three-level model only)}
+#'     \item{`es_sd1`}{SD of the true endline effects across effect-size pairs
+#'       within a study}
+#'     \item{`es_sd2`}{residual SD of the true follow-up effects across
+#'       effect-size pairs within a study, given the true endline effects}}
 #'
 #' @references Gilbert, J. B., & Himmelsbach, Z. (2026). *Why fadeout is
 #'   (probably) worse than we think: Adjusting for correlated sampling error in
@@ -93,15 +114,16 @@
 #' @seealso [gh_sensitivity()] to vary `rho`, [gh_prior()], [gh_simulate()].
 #' @examples
 #' \donttest{
-#' # 2 chains keeps the examples within CRAN's limit of 2 cores; the default
-#' # is 4 chains run in parallel
+#' # 2 chains of 2000 draws give the default 4000 draws within CRAN's limit
+#' # of 2 cores; the default is 4 chains of 1000 run in parallel
 #' fit <- gh_reg(persist_sim, es1, se1, es2, se2, study = study, rho = 0.6,
-#'               chains = 2)
+#'               chains = 2, iter_sampling = 2000)
 #' fit
 #' coef(fit)
 #'
 #' # study-specific sampling correlations
-#' gh_reg(persist_sim, es1, se1, es2, se2, study = study, rho = rho, chains = 2)
+#' gh_reg(persist_sim, es1, se1, es2, se2, study = study, rho = rho,
+#'        chains = 2, iter_sampling = 2000)
 #' }
 #' @export
 gh_reg <- function(data, es1, se1, es2, se2, study = NULL, rho,
@@ -119,7 +141,8 @@ gh_reg <- function(data, es1, se1, es2, se2, study = NULL, rho,
   backend <- match.arg(backend, c("cmdstanr", "rstan"))
 
   pars <- c("beta", "alpha", "mu",
-            if (d$sdata$has_study) c("sd_u1[1]", "sd_u2[1]"), "tau1", "tau2")
+            if (d$sdata$has_study) c("study_sd1[1]", "study_sd2[1]"),
+            "es_sd1", "es_sd2")
   s <- .gh_sample(backend, c(d$sdata, unclass(prior)), pars, chains = chains,
                   cores = cores, iter_warmup = iter_warmup,
                   iter_sampling = iter_sampling, seed = seed, refresh = refresh, ...)
@@ -202,8 +225,12 @@ gh_reg <- function(data, es1, se1, es2, se2, study = NULL, rho,
             "adapt_delta or checking the priors.", call. = FALSE)
   if (any(x$summary$rhat > 1.01, na.rm = TRUE))
     warning("Some R-hat values exceed 1.01; run longer chains.", call. = FALSE)
-  if (any(x$summary$ess_bulk < 400, na.rm = TRUE))
-    warning("Some bulk effective sample sizes are below 400; run longer chains.",
+  # 100 effective draws per chain (Vehtari et al., 2021): 400 with 4 chains
+  min_ess <- 100 * posterior::nchains(x$draws)
+  low <- x$summary$term[x$summary$ess_bulk < min_ess]
+  if (length(low))
+    warning("Bulk effective sample size is below ", min_ess, " (100 per chain) ",
+            "for ", paste(low, collapse = ", "), "; run longer chains.",
             call. = FALSE)
   invisible(x)
 }

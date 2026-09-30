@@ -1,6 +1,8 @@
 url: https://joshgilbert1994.github.io/ghreg/
 template:
   bootstrap: 5
+  # render the LaTeX in help pages (\eqn, \deqn) as well as in articles
+  math-rendering: katex
 reference:
   - title: Fitting
     contents:

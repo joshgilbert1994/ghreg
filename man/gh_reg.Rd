@@ -68,10 +68,20 @@ columns \code{term}, \code{estimate}, \code{std.error}, \code{ci.lower}, \code{c
 \item{\code{n_pairs}, \code{n_studies}}{sample sizes}
 \item{\code{rho}}{the sampling correlations used, one per pair}
 \item{\code{divergences}, \code{max_treedepth}}{sampler diagnostics}}
-The parameters are \code{beta} (conditional persistence), \code{alpha} (mean true
-follow-up effect when the true endline effect is 0), \code{mu} (mean true
-endline effect), \code{sd_u1} and \code{sd_u2} (study-level SDs; three-level model
-only), and \code{tau1} and \code{tau2} (effect-size-level SDs).
+The parameters are
+\describe{
+\item{\code{beta}}{conditional persistence}
+\item{\code{alpha}}{mean true follow-up effect when the true endline effect
+is 0}
+\item{\code{mu}}{mean true endline effect}
+\item{\code{study_sd1}}{between-study SD of the true endline effects
+(three-level model only)}
+\item{\code{study_sd2}}{between-study residual SD of the true follow-up
+effects, given the true endline effects (three-level model only)}
+\item{\code{es_sd1}}{SD of the true endline effects across effect-size pairs
+within a study}
+\item{\code{es_sd2}}{residual SD of the true follow-up effects across
+effect-size pairs within a study, given the true endline effects}}
 }
 \description{
 Fits the Gilbert and Himmelsbach (2026) meta-regression of follow-up effect
@@ -95,15 +105,26 @@ follow-up effect sizes \eqn{\delta_{1jk}} and \eqn{\delta_{2jk}},
   \Sigma_{jk}\right),}{(es1_jk, es2_jk) ~ N((theta1_jk, theta2_jk), Sigma_jk),}
 where \eqn{\Sigma_{jk}} has variances \code{se1^2} and \code{se2^2} and correlation
 \code{rho}, and
-\eqn{u_{1k} \sim N(0, sd_{u1}^2)}{u1_k ~ N(0, sd_u1^2)},
-\eqn{u_{2k} \sim N(0, sd_{u2}^2)}{u2_k ~ N(0, sd_u2^2)},
-\eqn{\epsilon_{1jk} \sim N(0, \tau_1^2)}{eps1_jk ~ N(0, tau1^2)}, and
-\eqn{\epsilon_{2jk} \sim N(0, \tau_2^2)}{eps2_jk ~ N(0, tau2^2)}.
+\eqn{u_{1k} \sim N(0, \sigma_{S1}^2)}{u1_k ~ N(0, sigma_S1^2)},
+\eqn{u_{2k} \sim N(0, \sigma_{S2}^2)}{u2_k ~ N(0, sigma_S2^2)},
+\eqn{\epsilon_{1jk} \sim N(0, \sigma_{E1}^2)}{eps1_jk ~ N(0, sigma_E1^2)},
+and \eqn{\epsilon_{2jk} \sim N(0, \sigma_{E2}^2)}{eps2_jk ~ N(0, sigma_E2^2)}.
 The same \code{beta} links the true effects within and between studies.
 
+The four standard deviations \eqn{\sigma_{S1}}{sigma_S1},
+\eqn{\sigma_{S2}}{sigma_S2}, \eqn{\sigma_{E1}}{sigma_E1}, and
+\eqn{\sigma_{E2}}{sigma_E2} are reported as \code{study_sd1}, \code{study_sd2},
+\code{es_sd1}, and \code{es_sd2}: S (study) is the between-study level and E (effect
+size) the level of effect-size pairs within studies. The "1" SDs describe
+the true endline effects. The "2" SDs are \emph{residual}: they describe the
+true follow-up effects after conditioning on the true endline effects, so
+the total SD of the true follow-up effects is at least as large (larger
+whenever \code{beta} is not 0).
+
 With \code{study = NULL}, or when every study contributes one pair, the study
-level is dropped (only \eqn{sd_{u}^2 + \tau^2} would be identified) and the
-model is the two-level model in the paper.
+level is dropped, since only the sum of the study- and pair-level variances
+would be identified, and the model is the two-level model in the paper. Its
+\eqn{\tau_1}{tau_1} and \eqn{\tau_2}{tau_2} are \code{es_sd1} and \code{es_sd2}.
 
 The study effects \eqn{u_{1k}} and \eqn{u_{2k}} capture clustering of the
 \emph{true} effects within studies. The sampling errors of different pairs are
@@ -115,7 +136,7 @@ The latent \eqn{\theta}, \eqn{\epsilon}, and \eqn{u} are integrated out
 analytically, so Stan samples only the hyperparameters. The posterior is the
 same as that of the latent-variable program in the paper's appendix, but
 sampling is faster and free of the funnel geometry that causes divergent
-transitions when sampling error is large relative to \eqn{\tau_1}.
+transitions when sampling error is large relative to \code{es_sd1}.
 }
 
 \section{The sampling correlation \code{rho}}{
@@ -130,15 +151,16 @@ study-specific values.
 
 \examples{
 \donttest{
-# 2 chains keeps the examples within CRAN's limit of 2 cores; the default
-# is 4 chains run in parallel
+# 2 chains of 2000 draws give the default 4000 draws within CRAN's limit
+# of 2 cores; the default is 4 chains of 1000 run in parallel
 fit <- gh_reg(persist_sim, es1, se1, es2, se2, study = study, rho = 0.6,
-              chains = 2)
+              chains = 2, iter_sampling = 2000)
 fit
 coef(fit)
 
 # study-specific sampling correlations
-gh_reg(persist_sim, es1, se1, es2, se2, study = study, rho = rho, chains = 2)
+gh_reg(persist_sim, es1, se1, es2, se2, study = study, rho = rho,
+       chains = 2, iter_sampling = 2000)
 }
 }
 \references{

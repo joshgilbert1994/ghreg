@@ -22,6 +22,7 @@ importFrom(posterior,
   as_draws_array,
   as_draws_df
 )
+importFrom(rlang,.data)
 importFrom(stats,
   coef,
   nobs
